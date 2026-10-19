@@ -10,13 +10,23 @@ interface HomePageProps {
 
 export function HomePage({ onResult }: HomePageProps) {
   const analyzerRef = useRef<HTMLDivElement>(null);
+  const [ingestMode, setIngestMode] = useState<"text" | "url">("text");
   const [inputText, setInputText] = useState("");
+  const [inputUrl, setInputUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   const handleInputChange = (value: string) => {
     setInputText(value);
     if (error) setError("");
+    if (notice) setNotice("");
+  };
+
+  const handleModeChange = (mode: "text" | "url") => {
+    setIngestMode(mode);
+    setError("");
+    setNotice("");
   };
 
   const handleAnalyze = () => {
@@ -37,7 +47,7 @@ export function HomePage({ onResult }: HomePageProps) {
     setError("");
     setLoading(true);
 
-    verifyContent(trimmed)
+    verifyContent(trimmed, "text")
       .then((result) => {
         setLoading(false);
         onResult(result);
@@ -46,6 +56,70 @@ export function HomePage({ onResult }: HomePageProps) {
         setLoading(false);
         setError("Ocurrió un error al procesar el texto. Inténtalo nuevamente.");
       });
+  };
+
+  const handleAnalyzeUrl = async () => {
+    const trimmedUrl = inputUrl.trim();
+    if (!trimmedUrl) {
+      setError("Ingresa una URL HTTPS para analizar.");
+      return;
+    }
+    if (!/^https:\/\//i.test(trimmedUrl)) {
+      setError("La URL debe comenzar con https://");
+      return;
+    }
+
+    setError("");
+    setNotice("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/analyze-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: trimmedUrl }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        const code = payload?.code;
+
+        if (response.status === 403 || code === "SCRAPING_BLOCKED") {
+          setLoading(false);
+          setError("El sitio bloqueó la extracción automática (403). Pega el texto manualmente para continuar.");
+          setIngestMode("text");
+          return;
+        }
+
+        if (code === "PAGE_NOT_FOUND") {
+          setLoading(false);
+          setError("No encontramos la página (404). Intenta otro enlace o pega el texto manualmente.");
+          setIngestMode("text");
+          return;
+        }
+
+        if (response.status === 404) {
+          setLoading(false);
+          setError("No está disponible el servicio de extracción de URL. Si estás en local, ejecuta `npm run dev:vercel`.");
+          return;
+        }
+
+        throw new Error(payload?.error ?? "analyze_url_failed");
+      }
+
+      const extracted = await response.json();
+      const textForAnalysis = typeof extracted?.textForAnalysis === "string" ? extracted.textForAnalysis : "";
+      if (!textForAnalysis) throw new Error("No se pudo extraer contenido para analizar.");
+
+      setNotice("Contenido extraído automáticamente desde la URL. Analizando credibilidad...");
+      const result = await verifyContent(textForAnalysis, "url");
+      setLoading(false);
+      onResult(result);
+    } catch {
+      setLoading(false);
+      setError("No pudimos extraer el contenido del enlace. Puedes pegar el texto manualmente.");
+      setIngestMode("text");
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -66,7 +140,7 @@ export function HomePage({ onResult }: HomePageProps) {
         <div ref={analyzerRef} id="verificar" className="factify-analyzer-anchor max-w-4xl mx-auto factify-enter factify-enter-d5 mb-8">
           <h2 className="factify-section-heading">Verificación de noticias</h2>
           <p className="text-center text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" style={{ fontSize: "0.95rem", lineHeight: 1.6 }}>
-            Pega el texto de cualquier noticia y nuestro motor basado en Procesamiento de Lenguaje Natural analizará patrones y señales para estimar su confiabilidad.
+            Puedes pegar texto o ingresar un enlace web HTTPS para analizar automáticamente su contenido y estimar su confiabilidad.
           </p>
         </div>
 
@@ -75,22 +149,53 @@ export function HomePage({ onResult }: HomePageProps) {
             <div className="p-4 sm:p-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex items-center justify-between">
               <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 font-semibold text-sm">
                 <FileText className="w-4 h-4" />
-                <span>Ingreso de noticia en formato texto</span>
+                <span>{ingestMode === "text" ? "Ingreso de noticia en formato texto" : "Ingreso de noticia por enlace web"}</span>
               </div>
-              <span className="text-xs text-gray-400">
-                {inputText.length} / 10.000 caracteres
-              </span>
+              {ingestMode === "text" ? (
+                <span className="text-xs text-gray-400">{inputText.length} / 10.000 caracteres</span>
+              ) : (
+                <span className="text-xs text-gray-400">URL HTTPS</span>
+              )}
             </div>
 
             <div className="p-6">
-              <textarea
-                value={inputText}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Pega aquí el texto de la noticia que deseas verificar... (mínimo 20 caracteres, pulsa Ctrl+Enter para analizar)"
-                className="field resize-none"
-                rows={7}
-              />
+              <div className="mb-4 inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-900">
+                <button
+                  onClick={() => handleModeChange("text")}
+                  className={`px-3 py-1.5 rounded-md text-sm ${ingestMode === "text" ? "bg-blue-600 text-white" : "text-gray-500 dark:text-gray-300"}`}
+                >
+                  Texto manual
+                </button>
+                <button
+                  onClick={() => handleModeChange("url")}
+                  className={`px-3 py-1.5 rounded-md text-sm ${ingestMode === "url" ? "bg-blue-600 text-white" : "text-gray-500 dark:text-gray-300"}`}
+                >
+                  Enlace web
+                </button>
+              </div>
+
+              {ingestMode === "text" ? (
+                <textarea
+                  value={inputText}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Pega aquí el texto de la noticia que deseas verificar... (mínimo 20 caracteres, pulsa Ctrl+Enter para analizar)"
+                  className="field resize-none"
+                  rows={7}
+                />
+              ) : (
+                <input
+                  type="url"
+                  value={inputUrl}
+                  onChange={(e) => {
+                    setInputUrl(e.target.value);
+                    if (error) setError("");
+                    if (notice) setNotice("");
+                  }}
+                  placeholder="https://sitio.com/noticia"
+                  className="field"
+                />
+              )}
 
               {error && (
                 <p className="mt-2 text-red-500 flex items-center gap-1.5" style={{ fontSize: "0.875rem" }}>
@@ -98,12 +203,19 @@ export function HomePage({ onResult }: HomePageProps) {
                   {error}
                 </p>
               )}
+              {notice && (
+                <p className="mt-2 text-blue-600 dark:text-blue-400" style={{ fontSize: "0.875rem" }}>
+                  {notice}
+                </p>
+              )}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-5 gap-4">
                 <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>
-                  Factify analiza patrones lingüísticos, lenguaje alarmista, mayúsculas y referencias a fuentes para estimar su confiabilidad.
+                  {ingestMode === "text"
+                    ? "Factify analiza patrones lingüísticos, lenguaje alarmista, mayúsculas y referencias a fuentes para estimar su confiabilidad."
+                    : "Factify intentará extraer titular y contenido usando metadatos OpenGraph y texto limpio del artículo."}
                 </p>
-                <button onClick={handleAnalyze} disabled={loading} className="btn-primary flex-shrink-0">
+                <button onClick={ingestMode === "text" ? handleAnalyze : handleAnalyzeUrl} disabled={loading} className="btn-primary flex-shrink-0">
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
@@ -112,7 +224,7 @@ export function HomePage({ onResult }: HomePageProps) {
                   ) : (
                     <>
                       <Search className="w-4 h-4" />
-                      Analizar noticia
+                      {ingestMode === "text" ? "Analizar noticia" : "Extraer y analizar URL"}
                     </>
                   )}
                 </button>

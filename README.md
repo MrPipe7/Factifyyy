@@ -19,6 +19,7 @@
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Inicio rápido](#inicio-rápido)
 - [Evaluación](#evaluación)
+- [Infraestructura Serverless](#infraestructura-serverless)
 
 ---
 
@@ -139,3 +140,38 @@ npm run test:evaluation
 ```
 
 Resultado esperado: **100%** de precisión en las 3 categorías (0% falsos positivos, 0% falsos negativos).
+
+---
+
+## Infraestructura Serverless
+
+Implementación de HU06 (FTY-18) para despliegue en Vercel + Supabase:
+
+- **FTY-18.1 CD Vercel:** el proyecto usa `vercel.json` y despliegue conectado al repositorio GitHub.
+- **FTY-18.2 Supabase PostgreSQL:** el script DDL está en `supabase/schema.sql` (tablas `verifications_log` y `user_feedback`).
+- **FTY-18.3 Variables seguras:** usar `.env.example` como plantilla y cargar variables en Vercel:
+  - `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`
+  - `GOOGLE_FACT_CHECK_API_KEY`
+  - `TAVILY_API_KEY`
+  - `FACTIFY_ADMIN_KEY`
+- **FTY-18.4 Serverless Functions:** el directorio `/api` contiene funciones Node.js/TypeScript:
+  - `api/verify.ts`
+  - `api/feedback.ts`
+  - `api/evaluation.ts`
+  - `api/health.ts`
+
+### Pasos de puesta en marcha
+
+1. Crear proyecto Supabase y ejecutar `supabase/schema.sql` en SQL Editor.
+2. Cargar variables en Vercel (Project Settings -> Environment Variables).
+3. Verificar endpoints desplegados:
+   - `GET /api/health`
+   - `POST /api/verify`
+   - `POST /api/feedback`
+   - `GET /api/evaluation` (requiere header `x-factify-admin-key`)
+4. Para desarrollo local integrado de frontend + serverless, usar:
+
+```bash
+npm run dev:vercel
+```
