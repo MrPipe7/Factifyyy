@@ -6,6 +6,7 @@
   "description": "Prototipo de verificación de noticias — React + Vite frontend, backend serverless TypeScript",
   "scripts": {
     "dev": "npm run dev --prefix frontend",
+    "dev:vercel": "vercel dev",
     "build": "cd frontend && npm install && npm run build",
     "install:frontend": "npm install --prefix frontend",
     "clean": "node --input-type=module -e \"import fs from 'node:fs'; fs.rmSync('frontend/node_modules',{recursive:true,force:true});\"",
@@ -17,6 +18,7 @@
     "typescript": "^5.7.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.56.1",
     "@huggingface/inference": "^4.13.19"
   }
 }
