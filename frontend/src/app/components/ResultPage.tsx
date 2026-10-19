@@ -48,6 +48,8 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const [feedbackVote, setFeedbackVote] = useState<"helpful" | "not_helpful" | null>(null);
   const [feedbackComment, setFeedbackComment] = useState("");
   const [sendingFeedback, setSendingFeedback] = useState(false);
+  const [feedbackVerificationId, setFeedbackVerificationId] = useState<string | null>(result.verificationId ?? null);
+  const [feedbackSent, setFeedbackSent] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastKind, setToastKind] = useState<"success" | "error">("success");
   const shareAreaRef = useRef<HTMLDivElement>(null);
@@ -115,18 +117,36 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
       showToast("Selecciona si la explicación fue útil o no.", "error");
       return;
     }
-    if (!result.verificationId) {
-      showToast("No se pudo vincular este análisis para feedback. Reintenta con un nuevo análisis.", "error");
-      return;
-    }
-
     setSendingFeedback(true);
     try {
+      let verificationId = feedbackVerificationId;
+      if (!verificationId) {
+        const reverifyResponse = await fetch("/api/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: result.inputText,
+            kind: result.inputKind ?? "text",
+          }),
+        });
+
+        if (!reverifyResponse.ok) {
+          throw new Error("reverify_failed");
+        }
+
+        const reverifyPayload = await reverifyResponse.json().catch(() => ({}));
+        verificationId = typeof reverifyPayload?.verificationId === "string" ? reverifyPayload.verificationId : null;
+        if (!verificationId) {
+          throw new Error("verification_id_missing");
+        }
+        setFeedbackVerificationId(verificationId);
+      }
+
       const response = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          verificationId: result.verificationId,
+          verificationId,
           vote: feedbackVote,
           comment: feedbackComment.trim(),
         }),
@@ -139,9 +159,10 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
 
       setFeedbackComment("");
       setFeedbackVote(null);
+      setFeedbackSent(true);
       showToast("¡Gracias! Tu retroalimentación fue registrada correctamente.", "success");
     } catch {
-      showToast("No se pudo enviar la retroalimentación. Intenta nuevamente.", "error");
+      showToast("No se pudo enviar la retroalimentación. Verifica que /api/verify y /api/feedback estén activos.", "error");
     } finally {
       setSendingFeedback(false);
     }
@@ -361,6 +382,11 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
             >
               {sendingFeedback ? "Enviando..." : "Enviar feedback"}
             </button>
+            {feedbackSent && (
+              <p className="mt-3 text-emerald-600 dark:text-emerald-400" style={{ fontSize: "0.85rem" }}>
+                Gracias por tu feedback. Tu opinión nos ayuda a mejorar Factify.
+              </p>
+            )}
           </div>
 
           {/* Disclaimer */}

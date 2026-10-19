@@ -31,9 +31,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       providers,
     };
 
+    let storageError: string | null = null;
     try {
       const supabase = getSupabaseClient();
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("verifications_log")
         .insert({
         input_text: validated.text,
@@ -49,11 +50,21 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         .select("id")
         .single();
 
+      if (error) {
+        storageError = error.message;
+      }
+
       if (data?.id) {
         responsePayload.verificationId = data.id;
       }
-    } catch {
-      // Logging failure must not break the verification response.
+    } catch (error: any) {
+      // Logging failure must not break the verification response, but we expose reason for debugging.
+      storageError = error?.message ?? "verification_log_insert_failed";
+      console.error("[verify] storage error:", storageError);
+    }
+
+    if (storageError) {
+      (responsePayload as any).storageError = storageError;
     }
 
     sendJson(res, 200, responsePayload);

@@ -1,4 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
+import path from "node:path";
+import { config as loadDotEnv } from "dotenv";
+
+// Local DX: allow Serverless Functions to read .env.local when running `vercel dev`.
+loadDotEnv({ path: path.resolve(process.cwd(), ".env.local") });
+loadDotEnv();
 
 function requiredEnv(name: string): string {
   const value = process.env[name];

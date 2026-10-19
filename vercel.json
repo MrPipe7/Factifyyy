@@ -1,5 +1,6 @@
 {
   "framework": "vite",
+  "devCommand": "npm run dev --prefix frontend -- --port $PORT",
   "installCommand": "npm install --ignore-scripts=false && npm install --prefix frontend --ignore-scripts=false",
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/dist"
