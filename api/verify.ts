@@ -33,7 +33,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     try {
       const supabase = getSupabaseClient();
-      await supabase.from("verifications_log").insert({
+      const { data } = await supabase
+        .from("verifications_log")
+        .insert({
         input_text: validated.text,
         input_kind: validated.kind,
         classification: responsePayload.classification,
@@ -43,7 +45,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         processing_ms: responsePayload.processingMs,
         providers,
         result_json: responsePayload,
-      });
+        })
+        .select("id")
+        .single();
+
+      if (data?.id) {
+        responsePayload.verificationId = data.id;
+      }
     } catch {
       // Logging failure must not break the verification response.
     }

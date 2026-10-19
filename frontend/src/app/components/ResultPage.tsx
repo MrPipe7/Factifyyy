@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { CheckCircle, AlertTriangle, XCircle, RotateCcw, Share2, Info, ChevronDown, ChevronUp, ShieldCheck } from "../../components/Icons";
+import { CheckCircle, AlertTriangle, XCircle, RotateCcw, Share2, Info, ChevronDown, ChevronUp, ShieldCheck, ThumbsUp, ThumbsDown } from "../../components/Icons";
 import { AnalysisResult } from "../utils/analyzer";
 import { AlertModal } from "./AlertModal";
 
@@ -45,6 +45,11 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const [showAlert, setShowAlert] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
+  const [feedbackVote, setFeedbackVote] = useState<"helpful" | "not_helpful" | null>(null);
+  const [feedbackComment, setFeedbackComment] = useState("");
+  const [sendingFeedback, setSendingFeedback] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastKind, setToastKind] = useState<"success" | "error">("success");
   const shareAreaRef = useRef<HTMLDivElement>(null);
 
   const config = classificationConfig[result.classification];
@@ -98,6 +103,49 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const positiveSignals = result.signals.filter((s) => s.type === "positive");
   const negativeSignals = result.signals.filter((s) => s.type === "negative");
   const warningSignals = result.signals.filter((s) => s.type === "warning");
+
+  const showToast = (message: string, kind: "success" | "error") => {
+    setToastKind(kind);
+    setToastMessage(message);
+    window.setTimeout(() => setToastMessage(""), 2600);
+  };
+
+  const handleSendFeedback = async () => {
+    if (!feedbackVote) {
+      showToast("Selecciona si la explicación fue útil o no.", "error");
+      return;
+    }
+    if (!result.verificationId) {
+      showToast("No se pudo vincular este análisis para feedback. Reintenta con un nuevo análisis.", "error");
+      return;
+    }
+
+    setSendingFeedback(true);
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          verificationId: result.verificationId,
+          vote: feedbackVote,
+          comment: feedbackComment.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload?.error ?? "feedback_failed");
+      }
+
+      setFeedbackComment("");
+      setFeedbackVote(null);
+      showToast("¡Gracias! Tu retroalimentación fue registrada correctamente.", "success");
+    } catch {
+      showToast("No se pudo enviar la retroalimentación. Intenta nuevamente.", "error");
+    } finally {
+      setSendingFeedback(false);
+    }
+  };
 
   return (
     <>
@@ -264,6 +312,57 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
             </div>
           </div>
 
+          {/* Feedback */}
+          <div className="surface-panel p-5 mb-5">
+            <h3 className="text-gray-800 dark:text-gray-100 mb-2" style={{ fontSize: "1rem", fontWeight: 600 }}>
+              ¿Te fue útil esta explicación?
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4" style={{ fontSize: "0.85rem" }}>
+              Tu feedback nos ayuda a medir satisfacción e impacto de la plataforma.
+            </p>
+
+            <div className="flex flex-wrap gap-2 mb-3">
+              <button
+                onClick={() => setFeedbackVote("helpful")}
+                className={`px-3 py-2 rounded-lg border flex items-center gap-2 transition-colors ${
+                  feedbackVote === "helpful"
+                    ? "bg-green-100 border-green-300 text-green-700 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300"
+                    : "border-gray-200 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                }`}
+              >
+                <ThumbsUp className="w-4 h-4" />
+                Útil
+              </button>
+              <button
+                onClick={() => setFeedbackVote("not_helpful")}
+                className={`px-3 py-2 rounded-lg border flex items-center gap-2 transition-colors ${
+                  feedbackVote === "not_helpful"
+                    ? "bg-red-100 border-red-300 text-red-700 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300"
+                    : "border-gray-200 text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                }`}
+              >
+                <ThumbsDown className="w-4 h-4" />
+                Poco útil
+              </button>
+            </div>
+
+            <textarea
+              value={feedbackComment}
+              onChange={(e) => setFeedbackComment(e.target.value)}
+              placeholder="Comentario opcional sobre la explicación..."
+              className="field resize-none mb-3"
+              rows={3}
+            />
+
+            <button
+              onClick={handleSendFeedback}
+              disabled={sendingFeedback}
+              className="btn-primary"
+            >
+              {sendingFeedback ? "Enviando..." : "Enviar feedback"}
+            </button>
+          </div>
+
           {/* Disclaimer */}
           <div className="surface-subtle p-4 mb-6">
             <p className="text-gray-400" style={{ fontSize: "0.78rem", lineHeight: 1.6 }}>
@@ -294,6 +393,20 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
           )}
         </div>
       </div>
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <div
+            className={`px-4 py-3 rounded-lg shadow-lg border ${
+              toastKind === "success"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-200"
+                : "bg-red-50 border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-200"
+            }`}
+            style={{ fontSize: "0.85rem" }}
+          >
+            {toastMessage}
+          </div>
+        </div>
+      )}
     </>
   );
 }

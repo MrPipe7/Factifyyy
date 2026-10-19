@@ -34,6 +34,8 @@ export interface SourceStats {
 }
 
 export interface AnalysisResult {
+  /** ID del registro persistido en verifications_log (si está disponible). */
+  verificationId?: string;
   classification: Classification;
   confidence: number;
   signals: Signal[];
