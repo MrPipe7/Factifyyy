@@ -2,10 +2,5 @@
   "framework": "vite",
   "installCommand": "npm install --ignore-scripts=false && npm install --prefix frontend --ignore-scripts=false",
   "buildCommand": "npm run build",
-  "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "outputDirectory": "frontend/dist"
 }
