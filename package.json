@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "npm run dev --prefix frontend",
     "dev:vercel": "vercel dev",
-    "build": "cd frontend && npm install && npm run build",
+    "build": "npm run build --prefix frontend",
     "install:frontend": "npm install --prefix frontend",
     "clean": "node --input-type=module -e \"import fs from 'node:fs'; fs.rmSync('frontend/node_modules',{recursive:true,force:true});\"",
     "test:evaluation": "npx tsx scripts/run-evaluation.mjs"
