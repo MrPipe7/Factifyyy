@@ -30,3 +30,27 @@ create table if not exists public.user_feedback (
 
 create index if not exists idx_user_feedback_verification_id
   on public.user_feedback (verification_id);
+
+alter table public.verifications_log enable row level security;
+alter table public.user_feedback enable row level security;
+
+drop policy if exists "allow_anon_insert_verifications_log" on public.verifications_log;
+create policy "allow_anon_insert_verifications_log"
+  on public.verifications_log
+  for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "allow_anon_select_verifications_log" on public.verifications_log;
+create policy "allow_anon_select_verifications_log"
+  on public.verifications_log
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "allow_anon_insert_user_feedback" on public.user_feedback;
+create policy "allow_anon_insert_user_feedback"
+  on public.user_feedback
+  for insert
+  to anon, authenticated
+  with check (true);

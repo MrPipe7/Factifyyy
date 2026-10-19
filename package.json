@@ -18,6 +18,7 @@
     "typescript": "^5.7.0"
   },
   "dependencies": {
+    "dotenv": "^16.6.1",
     "@supabase/supabase-js": "^2.56.1",
     "@huggingface/inference": "^4.13.19"
   }
