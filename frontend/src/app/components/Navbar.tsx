@@ -1,6 +1,6 @@
 import { Shield, Moon, Sun } from "../../components/Icons";
 
-type Page = "home" | "result" | "history";
+type Page = "home" | "result" | "history" | "tips";
 type ThemeMode = "light" | "dark";
 
 interface NavbarProps {
@@ -38,6 +38,7 @@ export function Navbar({ currentPage, onNavigate, theme, onToggleTheme }: Navbar
             {[
               { id: "home", label: "Inicio" },
               { id: "history", label: "Historial" },
+              { id: "tips", label: "Consejos" },
             ].map((item) => (
               <button
                 key={item.id}
