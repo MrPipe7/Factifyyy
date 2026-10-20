@@ -368,7 +368,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         input_text: normalizedText,
         input_kind: validated.kind,
         classification: responsePayload.classification,
-        confidence: responsePayload.confidence,
         engine: responsePayload.engine ?? "local",
         analysis_origin: responsePayload.analysisOrigin ?? "Análisis textual local",
         processing_ms: responsePayload.processingMs,
