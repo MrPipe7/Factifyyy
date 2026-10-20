@@ -1,5 +1,5 @@
-import { getSupabaseClient } from "./_lib/supabase.js";
 import { methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
+import { persistFeedback } from "../backend/services/feedbackService.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
@@ -18,12 +18,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
 
-    const supabase = getSupabaseClient();
-    const { error } = await supabase.from("user_feedback").insert({
-      verification_id: verificationId,
-      vote,
-      comment: comment || null,
-    });
+    const { error } = await persistFeedback(verificationId, vote, comment);
 
     if (error) {
       sendJson(res, 500, { error: error.message });
