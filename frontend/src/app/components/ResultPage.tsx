@@ -62,8 +62,6 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const Icon = config.icon;
   const shouldShowAlert = result.classification !== "confiable";
 
-  const engineLabel = "Estimación IA / Baseline NLP";
-
   const scrollToShareArea = () => {
     shareAreaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
@@ -220,12 +218,6 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <p className="factify-section-label">Resultado del análisis</p>
-                  <span
-                    className={`px-3 py-0.5 rounded-full ${config.badgeClass}`}
-                    style={{ fontSize: "0.75rem", fontWeight: 600 }}
-                  >
-                    {engineLabel}
-                  </span>
                 </div>
                 <h2
                   className={`mb-1 ${config.textClass}`}
@@ -285,7 +277,7 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
           {result.signals.length > 0 && (
             <div className="surface-panel p-5 mb-5">
               <h3 className="text-gray-800 dark:text-gray-100 mb-4" style={{ fontSize: "1rem", fontWeight: 600 }}>
-                Señales detectadas por el motor NLP
+                Señales detectadas
               </h3>
               <div className="flex flex-col gap-3">
                 {negativeSignals.map((signal, i) => (
@@ -416,7 +408,7 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
           <div className="surface-subtle p-4 mb-6">
             <p className="text-gray-400" style={{ fontSize: "0.78rem", lineHeight: 1.6 }}>
               <strong className="text-gray-500 dark:text-gray-300">Aviso informativo:</strong>{" "}
-              Esta clasificación es una estimación técnica apoyada por IA y análisis de procesamiento de lenguaje natural para la versión inicial. Factify no reemplaza el criterio propio del lector.
+              Esta clasificación es una estimación técnica apoyada por IA y análisis de procesamiento de lenguaje natural.
             </p>
           </div>
 

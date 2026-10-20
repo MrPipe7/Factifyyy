@@ -1,6 +1,6 @@
 import { Shield, Moon, Sun } from "../../components/Icons";
 
-type Page = "home" | "result";
+type Page = "home" | "result" | "history";
 type ThemeMode = "light" | "dark";
 
 interface NavbarProps {
@@ -34,14 +34,15 @@ export function Navbar({ currentPage, onNavigate, theme, onToggleTheme }: Navbar
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className="hidden sm:flex items-center bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-full border border-gray-200/50 dark:border-gray-700/50 mr-2">
+          <div className="flex items-center bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-full border border-gray-200/50 dark:border-gray-700/50 mr-2">
             {[
               { id: "home", label: "Inicio" },
+              { id: "history", label: "Historial" },
             ].map((item) => (
               <button
                 key={item.id}
-                onClick={() => onNavigate(item.id as "home")}
-                className={`px-4 py-1.5 rounded-full text-[0.85rem] font-medium transition-all ${
+                onClick={() => onNavigate(item.id as Page)}
+                className={`px-3 sm:px-4 py-1.5 rounded-full text-[0.8rem] sm:text-[0.85rem] font-medium transition-all ${
                   currentPage === item.id
                     ? "bg-white dark:bg-gray-700 text-[#1e4f9c] dark:text-blue-400 shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
