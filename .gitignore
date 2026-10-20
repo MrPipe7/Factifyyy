@@ -22,3 +22,5 @@ npm-debug.log*
 
 # PDFs de presentación / informes
 *.pdf
+
+.vercel

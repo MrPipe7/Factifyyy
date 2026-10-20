@@ -46,11 +46,14 @@ export default function App() {
 
     setCurrentResult(enrichedResult);
     setCurrentPage("result");
+    // Move viewport to top so the user reads the result from the beginning.
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAnalyzeAgain = () => {
     setCurrentResult(null);
     setCurrentPage("home");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleNavigate = (page: "home" | "about") => {

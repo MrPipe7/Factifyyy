@@ -15,20 +15,18 @@ export function WelcomeSection({ onStart }: WelcomeSectionProps) {
           </div>
 
           <h1 className="factify-welcome-title factify-enter factify-enter-d2">
-            Tu aliado contra la{" "}
-            <span className="factify-hero-accent">desinformación</span>
+            Verifica una noticia en segundos
           </h1>
 
           <p className="factify-welcome-lead factify-enter factify-enter-d3">
-            Antes de reenviar o compartir una noticia sospechosa, analiza su nivel de confiabilidad.
-            Factify procesa el texto mediante inteligencia artificial y procesamiento de lenguaje natural (NLP) para advertirte sobre posibles noticias falsas.
+            Antes de compartir una noticia, revisa si parece confiable, dudosa o falsa con una explicación simple.
           </p>
 
           <ul className="factify-welcome-points factify-enter factify-enter-d4">
             {[
-              "Ingresa noticias y textos sospechosos en formato texto",
-              "Detección automática de lenguaje alarmista, clickbait y ausencia de fuentes",
-              "Alerta preventiva inmediata si el contenido es dudoso o falso",
+              "Pega el texto de una noticia o un enlace web",
+              "Recibe una clasificación clara y fácil de entender",
+              "Obtén una alerta antes de compartir contenido riesgoso",
             ].map((point) => (
               <li key={point}>
                 <CheckCircle className="w-4 h-4 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />
@@ -69,7 +67,7 @@ export function WelcomeSection({ onStart }: WelcomeSectionProps) {
               <div>
                 <p className="factify-section-label mb-0.5">Ejemplo de resultado</p>
                 <p className="text-gray-800 dark:text-gray-100" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
-                  Análisis NLP completado
+                  Análisis completado
                 </p>
               </div>
             </div>
@@ -78,21 +76,18 @@ export function WelcomeSection({ onStart }: WelcomeSectionProps) {
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 <span className="text-amber-700 dark:text-amber-300" style={{ fontWeight: 700, fontSize: "0.9rem" }}>
-                  DUDOSO · 72%
+                  DUDOSO
                 </span>
-              </div>
-              <div className="h-1.5 rounded-full bg-amber-200/80 dark:bg-amber-900/50 overflow-hidden">
-                <div className="h-full w-[72%] rounded-full bg-amber-500" />
               </div>
             </div>
 
             <p className="text-gray-600 dark:text-gray-400 mb-4" style={{ fontSize: "0.82rem", lineHeight: 1.55 }}>
-              Se identificaron señales de lenguaje alarmista y ausencia de fuentes verificables. Se recomienda contrastar antes de compartir.
+              Se detectaron señales de riesgo y falta de respaldo claro. Recomendamos verificar antes de compartir.
             </p>
 
             <div className="flex flex-col gap-2">
-              <p className="factify-section-label">Señales evaluadas</p>
-              {["Lenguaje alarmista", "Atribución vaga de fuentes", "Uso de mayúsculas enfáticas"].map((signal, i) => (
+              <p className="factify-section-label">Qué revisamos</p>
+              {["Fuentes citadas", "Coherencia del contenido", "Señales de alerta"].map((signal, i) => (
                 <div key={signal} className="flex items-center gap-2 text-gray-600 dark:text-gray-300" style={{ fontSize: "0.78rem" }}>
                   <span className="w-5 h-5 rounded bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 flex items-center justify-center" style={{ fontSize: "0.65rem", fontWeight: 700 }}>
                     {i + 1}

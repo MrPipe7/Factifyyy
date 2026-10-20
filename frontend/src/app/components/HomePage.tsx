@@ -61,11 +61,11 @@ export function HomePage({ onResult }: HomePageProps) {
   const handleAnalyzeUrl = async () => {
     const trimmedUrl = inputUrl.trim();
     if (!trimmedUrl) {
-      setError("Ingresa una URL HTTPS para analizar.");
+      setError("Ingresa un enlace de noticia para analizar.");
       return;
     }
-    if (!/^https:\/\//i.test(trimmedUrl)) {
-      setError("La URL debe comenzar con https://");
+    if (!/^https?:\/\//i.test(trimmedUrl)) {
+      setError("Ingresa un enlace válido (por ejemplo: https://sitio.com/noticia).");
       return;
     }
 
@@ -140,7 +140,7 @@ export function HomePage({ onResult }: HomePageProps) {
         <div ref={analyzerRef} id="verificar" className="factify-analyzer-anchor max-w-4xl mx-auto factify-enter factify-enter-d5 mb-8">
           <h2 className="factify-section-heading">Verificación de noticias</h2>
           <p className="text-center text-gray-500 dark:text-gray-400 max-w-2xl mx-auto" style={{ fontSize: "0.95rem", lineHeight: 1.6 }}>
-            Puedes pegar texto o ingresar un enlace web HTTPS para analizar automáticamente su contenido y estimar su confiabilidad.
+            Pega una noticia o comparte un enlace, y te mostramos si parece confiable, dudosa o falsa.
           </p>
         </div>
 
@@ -154,7 +154,7 @@ export function HomePage({ onResult }: HomePageProps) {
               {ingestMode === "text" ? (
                 <span className="text-xs text-gray-400">{inputText.length} / 10.000 caracteres</span>
               ) : (
-                <span className="text-xs text-gray-400">URL HTTPS</span>
+                <span className="text-xs text-gray-400">Enlace web</span>
               )}
             </div>
 
@@ -179,7 +179,7 @@ export function HomePage({ onResult }: HomePageProps) {
                   value={inputText}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Pega aquí el texto de la noticia que deseas verificar... (mínimo 20 caracteres, pulsa Ctrl+Enter para analizar)"
+                  placeholder="Pega aquí el texto de la noticia que quieres verificar."
                   className="field resize-none"
                   rows={7}
                 />
@@ -192,7 +192,7 @@ export function HomePage({ onResult }: HomePageProps) {
                     if (error) setError("");
                     if (notice) setNotice("");
                   }}
-                  placeholder="https://sitio.com/noticia"
+                  placeholder="Pega aquí el enlace de la noticia"
                   className="field"
                 />
               )}
@@ -212,8 +212,8 @@ export function HomePage({ onResult }: HomePageProps) {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-5 gap-4">
                 <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>
                   {ingestMode === "text"
-                    ? "Factify analiza patrones lingüísticos, lenguaje alarmista, mayúsculas y referencias a fuentes para estimar su confiabilidad."
-                    : "Factify intentará extraer titular y contenido usando metadatos OpenGraph y texto limpio del artículo."}
+                    ? "Revisamos señales del texto para darte una clasificación simple y fácil de entender."
+                    : "Intentamos leer el contenido del enlace para analizarlo automáticamente."}
                 </p>
                 <button onClick={ingestMode === "text" ? handleAnalyze : handleAnalyzeUrl} disabled={loading} className="btn-primary flex-shrink-0">
                   {loading ? (
@@ -240,22 +240,22 @@ export function HomePage({ onResult }: HomePageProps) {
                 icon: FileText,
                 iconColor: "text-blue-600 dark:text-blue-400",
                 wrapClass: "bg-blue-50 dark:bg-blue-900/30",
-                title: "1. Ingreso de texto",
-                desc: "Pega el cuerpo o titular de la noticia",
+                title: "1. Ingresa la noticia",
+                desc: "Pega el texto o un enlace",
               },
               {
                 icon: Brain,
                 iconColor: "text-indigo-600 dark:text-indigo-400",
                 wrapClass: "bg-indigo-50 dark:bg-indigo-900/25",
-                title: "2. Motor IA / NLP",
-                desc: "Detección de señales de desinformación",
+                title: "2. Analizamos el contenido",
+                desc: "Buscamos señales y fuentes relacionadas",
               },
               {
                 icon: Shield,
                 iconColor: "text-emerald-600 dark:text-emerald-400",
                 wrapClass: "bg-emerald-50 dark:bg-emerald-900/25",
-                title: "3. Resultado y alerta",
-                desc: "Clasificación, explicación y advertencia",
+                title: "3. Te damos el resultado",
+                desc: "Confiable, dudoso o falso con explicación",
               },
             ].map((step, i) => (
               <div key={i} className="card-tonal p-5 flex items-start gap-3">

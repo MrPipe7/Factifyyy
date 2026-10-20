@@ -160,6 +160,7 @@ Implementación de HU06 (FTY-18) para despliegue en Vercel + Supabase:
   - `api/feedback.ts`
   - `api/evaluation.ts`
   - `api/health.ts`
+  - `api/fact-check.ts`
 
 ### Pasos de puesta en marcha
 

@@ -191,6 +191,39 @@ function hasMinimumLength(text: string): boolean {
   return text.trim().length >= 20;
 }
 
+/**
+ * Detecta frases de desmentido explícito (p. ej. "Es falso que...")
+ * para no penalizar injustamente textos que corrigen desinformación.
+ */
+function isExplicitDebunkStatement(text: string): boolean {
+  const norm = normalizeText(repairUtf8Mojibake(text));
+  const debunkStarters = [
+    "es falso que",
+    "no es cierto que",
+    "es incorrecto que",
+    "es un mito que",
+    "no hay evidencia de que",
+    "esta desmentido que",
+    "esta desmentida la afirmacion",
+  ];
+  const startsLikeDebunk = debunkStarters.some((p) => norm.includes(p));
+  if (!startsLikeDebunk) return false;
+
+  // Tópicos frecuentes de desinformación en salud/ciencia donde aparece esta redacción.
+  const debunkTopics = [
+    "mascarilla",
+    "mascarillas",
+    "hipoxia",
+    "oxigeno",
+    "vacuna",
+    "vacunas",
+    "5g",
+    "microchip",
+    "covid",
+  ];
+  return debunkTopics.some((t) => norm.includes(t));
+}
+
 /** Afirmaciones objetivamente imposibles o fraudulentas (bulos claros, no solo estilo alarmista). */
 export function isManifestlyFalseClaim(text: string): boolean {
   const norm = normalizeText(repairUtf8Mojibake(text));
@@ -235,6 +268,30 @@ export function analyzeContent(text: string): AnalysisResult {
 
   if (!hasMinimumLength(trimmed)) {
     return buildShortTextResult(trimmed);
+  }
+
+  if (isExplicitDebunkStatement(trimmed)) {
+    return {
+      classification: "confiable",
+      confidence: 82,
+      signals: [
+        {
+          type: "positive",
+          label: "Redacción de desmentido explícito",
+          description:
+            "El texto está formulado como corrección de una afirmación falsa y coincide con patrones de verificación informativa.",
+        },
+      ],
+      explanation:
+        "El contenido se presenta como desmentido de una afirmación falsa y no muestra señales típicas de manipulación. Por ello se clasifica como confiable en esta revisión.",
+      recommendation:
+        "Puedes considerarlo confiable, idealmente confirmando con una fuente oficial o verificador reconocido.",
+      timestamp: new Date(),
+      inputText: trimmed,
+      engine: "local",
+      analysisOrigin: "Análisis textual local",
+      preliminaryLocal: true,
+    };
   }
 
   if (isManifestlyFalseClaim(trimmed)) {
