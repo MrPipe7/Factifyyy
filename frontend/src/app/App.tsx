@@ -3,10 +3,11 @@ import { Navbar } from "./components/Navbar";
 import { HomePage } from "./components/HomePage";
 import { ResultPage } from "./components/ResultPage";
 import { HistoryPage } from "./components/HistoryPage";
+import { TipsPage } from "./components/TipsPage";
 import { AnalysisResult } from "./utils/analyzer";
 import { loadHistory, saveToHistory, type HistoryEntry } from "./utils/historyService";
 
-type Page = "home" | "result" | "history";
+type Page = "home" | "result" | "history" | "tips";
 type ThemeMode = "light" | "dark";
 
 const THEME_STORAGE_KEY = "factify.theme.v1";
@@ -62,7 +63,7 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleNavigate = (page: "home" | "history") => {
+  const handleNavigate = (page: "home" | "history" | "tips") => {
     if (page === "home") {
       setCurrentResult(null);
     }
@@ -103,6 +104,7 @@ export default function App() {
               onOpenEntry={handleOpenHistoryEntry}
             />
           )}
+          {currentPage === "tips" && <TipsPage />}
         </div>
       </main>
 
