@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle, AlertTriangle, XCircle, RotateCcw, Share2, Info, ChevronDown, ChevronUp, ShieldCheck, ThumbsUp, ThumbsDown } from "../../components/Icons";
 import { AnalysisResult } from "../utils/analyzer";
 import { AlertModal } from "./AlertModal";
+import { SourcesCard } from "./SourcesCard";
 
 interface ResultPageProps {
   result: AnalysisResult;
@@ -52,23 +53,32 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastKind, setToastKind] = useState<"success" | "error">("success");
+  const [warningPulse, setWarningPulse] = useState(false);
+  const [pendingShareWarning, setPendingShareWarning] = useState(false);
   const shareAreaRef = useRef<HTMLDivElement>(null);
+  const warningBannerRef = useRef<HTMLDivElement>(null);
 
   const config = classificationConfig[result.classification];
   const Icon = config.icon;
   const shouldShowAlert = result.classification !== "confiable";
 
   const engineLabel = "Estimación IA / Baseline NLP";
-  const confidenceHint = "Nivel de confianza estimado por señales";
 
   const scrollToShareArea = () => {
     shareAreaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
+  const scrollToWarningBanner = () => {
+    const node = warningBannerRef.current;
+    if (!node) return;
+    const headerOffset = 90;
+    const y = node.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+  };
+
   const handleShare = () => {
     if (shouldShowAlert) {
-      setShowAlert(true);
-      scrollToShareArea();
+      setPendingShareWarning(true);
     } else {
       if (navigator.clipboard?.writeText) {
         navigator.clipboard
@@ -105,6 +115,22 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const positiveSignals = result.signals.filter((s) => s.type === "positive");
   const negativeSignals = result.signals.filter((s) => s.type === "negative");
   const warningSignals = result.signals.filter((s) => s.type === "warning");
+
+  useEffect(() => {
+    if (!pendingShareWarning || !shouldShowAlert) return;
+    scrollToWarningBanner();
+    const followUp = window.setTimeout(() => scrollToWarningBanner(), 240);
+    const openModal = window.setTimeout(() => setShowAlert(true), 320);
+    setWarningPulse(true);
+    const timer = window.setTimeout(() => setWarningPulse(false), 900);
+    const resetPending = window.setTimeout(() => setPendingShareWarning(false), 340);
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(followUp);
+      window.clearTimeout(openModal);
+      window.clearTimeout(resetPending);
+    };
+  }, [pendingShareWarning, shouldShowAlert]);
 
   const showToast = (message: string, kind: "success" | "error") => {
     setToastKind(kind);
@@ -209,26 +235,21 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300" style={{ fontSize: "0.925rem" }}>{config.description}</p>
 
-                {/* Confidence bar */}
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-gray-500 dark:text-gray-400" style={{ fontSize: "0.8rem" }}>{confidenceHint}</span>
-                    <span className={config.textClass} style={{ fontSize: "0.85rem", fontWeight: 600 }}>{result.confidence}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${result.confidence}%`, background: config.barColor }}
-                    />
-                  </div>
-                </div>
+                <p className="mt-4 text-gray-500 dark:text-gray-400" style={{ fontSize: "0.82rem" }}>
+                  El veredicto se basa en trazabilidad de fuentes externas y reglas de contingencia local.
+                </p>
               </div>
             </div>
           </div>
 
           {/* Preventive alert banner */}
           {shouldShowAlert && (
-            <div className="rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30 p-4 mb-5">
+            <div
+              ref={warningBannerRef}
+              className={`rounded-xl border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30 p-4 mb-5 transition-all ${
+                warningPulse ? "ring-2 ring-orange-300 dark:ring-orange-600 shadow-lg" : ""
+              }`}
+            >
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
                 <p className="text-orange-800 dark:text-orange-200" style={{ fontSize: "0.86rem", lineHeight: 1.55 }}>
@@ -332,6 +353,8 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
               ))}
             </div>
           </div>
+
+          <SourcesCard result={result} />
 
           {/* Feedback */}
           <div className="surface-panel p-5 mb-5">

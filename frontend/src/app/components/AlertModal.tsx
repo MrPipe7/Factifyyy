@@ -1,5 +1,6 @@
 import { AlertTriangle, X, ExternalLink } from "../../components/Icons";
 import { Classification } from "../utils/analyzer";
+import { createPortal } from "react-dom";
 
 interface AlertModalProps {
   classification: Classification;
@@ -15,7 +16,7 @@ export function AlertModal({ classification, onClose, onContinue }: AlertModalPr
   const accentTextClass = isFalse ? "text-red-700" : "text-amber-700";
   const iconWrapClass = isFalse ? "bg-red-50" : "bg-amber-50";
 
-  return (
+  const modal = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
@@ -97,4 +98,7 @@ export function AlertModal({ classification, onClose, onContinue }: AlertModalPr
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return modal;
+  return createPortal(modal, document.body);
 }
