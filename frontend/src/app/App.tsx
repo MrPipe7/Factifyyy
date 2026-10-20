@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { HomePage } from "./components/HomePage";
 import { ResultPage } from "./components/ResultPage";
-import { AboutPage } from "./components/AboutPage";
+import { HistoryPage } from "./components/HistoryPage";
 import { AnalysisResult } from "./utils/analyzer";
+import { loadHistory, saveToHistory, type HistoryEntry } from "./utils/historyService";
 
-type Page = "home" | "result" | "about";
+type Page = "home" | "result" | "history";
 type ThemeMode = "light" | "dark";
 
 const THEME_STORAGE_KEY = "factify.theme.v1";
@@ -26,6 +27,7 @@ function loadTheme(): ThemeMode {
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
   const [currentResult, setCurrentResult] = useState<AnalysisResult | null>(null);
+  const [historyEntries, setHistoryEntries] = useState<HistoryEntry[]>(() => loadHistory());
   const [theme, setTheme] = useState<ThemeMode>(loadTheme);
 
   useEffect(() => {
@@ -45,6 +47,10 @@ export default function App() {
     };
 
     setCurrentResult(enrichedResult);
+    setHistoryEntries((prev) => {
+      const saved = saveToHistory(enrichedResult);
+      return [saved, ...prev].slice(0, 100);
+    });
     setCurrentPage("result");
     // Move viewport to top so the user reads the result from the beginning.
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -56,11 +62,17 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleNavigate = (page: "home" | "about") => {
+  const handleNavigate = (page: "home" | "history") => {
     if (page === "home") {
       setCurrentResult(null);
     }
     setCurrentPage(page);
+  };
+
+  const handleOpenHistoryEntry = (entry: HistoryEntry) => {
+    setCurrentResult(entry);
+    setCurrentPage("result");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleToggleTheme = () => {
@@ -84,6 +96,13 @@ export default function App() {
           {currentPage === "result" && currentResult && (
             <ResultPage result={currentResult} onAnalyzeAgain={handleAnalyzeAgain} />
           )}
+          {currentPage === "history" && (
+            <HistoryPage
+              entries={historyEntries}
+              onEntriesChange={setHistoryEntries}
+              onOpenEntry={handleOpenHistoryEntry}
+            />
+          )}
         </div>
       </main>
 
@@ -98,11 +117,6 @@ export default function App() {
             <span style={{ fontSize: "0.875rem" }} className="text-gray-500 dark:text-gray-400">
               <strong className="text-gray-700 dark:text-gray-200">Factify</strong> — Plataforma de verificación de noticias
             </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button onClick={() => { setCurrentResult(null); setCurrentPage("home"); }} className="factify-footer-link">
-              Inicio
-            </button>
           </div>
         </div>
       </footer>
