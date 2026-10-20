@@ -9,7 +9,6 @@ create table if not exists public.verifications_log (
   input_text text not null,
   input_kind text not null default 'text',
   classification text not null,
-  confidence integer not null check (confidence >= 0 and confidence <= 100),
   engine text not null default 'local',
   analysis_origin text,
   processing_ms integer,
@@ -54,3 +53,8 @@ create policy "allow_anon_insert_user_feedback"
   for insert
   to anon, authenticated
   with check (true);
+
+-- Migration safeguard for existing projects:
+-- If confidence was created in previous versions, remove it.
+alter table if exists public.verifications_log
+  drop column if exists confidence;

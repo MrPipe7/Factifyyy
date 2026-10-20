@@ -113,6 +113,7 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
   const positiveSignals = result.signals.filter((s) => s.type === "positive");
   const negativeSignals = result.signals.filter((s) => s.type === "negative");
   const warningSignals = result.signals.filter((s) => s.type === "warning");
+  const shouldShowLocalSignals = Boolean(result.preliminaryLocal || !(result.sources && result.sources.length > 0));
 
   useEffect(() => {
     if (!pendingShareWarning || !shouldShowAlert) return;
@@ -274,7 +275,7 @@ export function ResultPage({ result, onAnalyzeAgain }: ResultPageProps) {
           </div>
 
           {/* Signals detected */}
-          {result.signals.length > 0 && (
+          {shouldShowLocalSignals && result.signals.length > 0 && (
             <div className="surface-panel p-5 mb-5">
               <h3 className="text-gray-800 dark:text-gray-100 mb-4" style={{ fontSize: "1rem", fontWeight: 600 }}>
                 Señales detectadas

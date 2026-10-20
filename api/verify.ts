@@ -3,7 +3,7 @@ import { normalizeAnalysisText } from "../shared/textEncoding.js";
 import { validateVerifyBody } from "../shared/validateInput.js";
 import { getSupabaseClient } from "./_lib/supabase.js";
 import { methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
-import { runFactCheck } from "./fact-check.js";
+import { runFactCheck } from "../backend/services/factCheckService.js";
 import type { VerifiedSource } from "../shared/analyzer.js";
 
 function countAlerts(result: ReturnType<typeof analyzeContent>): number {
@@ -368,7 +368,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         input_text: normalizedText,
         input_kind: validated.kind,
         classification: responsePayload.classification,
-        confidence: responsePayload.confidence,
         engine: responsePayload.engine ?? "local",
         analysis_origin: responsePayload.analysisOrigin ?? "Análisis textual local",
         processing_ms: responsePayload.processingMs,
