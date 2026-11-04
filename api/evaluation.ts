@@ -1,5 +1,5 @@
 import { runEvaluationReport } from "../scripts/run-evaluation.mjs";
-import { methodNotAllowed, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
+import { getErrorMessage, methodNotAllowed, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "GET") {
@@ -18,7 +18,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   try {
     const report = await runEvaluationReport();
     sendJson(res, 200, report);
-  } catch (error: any) {
-    sendJson(res, 500, { error: error?.message ?? "evaluation_failed" });
+  } catch (error: unknown) {
+    sendJson(res, 500, { error: getErrorMessage(error, "evaluation_failed") });
   }
 }

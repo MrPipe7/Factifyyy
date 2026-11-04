@@ -1,4 +1,4 @@
-import { methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
+import { getErrorMessage, methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 import { analyzeUrl } from "../backend/services/analyzeUrlService.js";
 
 interface AnalyzeUrlBody {
@@ -28,9 +28,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       return;
     }
     sendJson(res, 200, extracted);
-  } catch (error: any) {
+  } catch (error: unknown) {
     sendJson(res, 500, {
-      error: error?.message ?? "analyze_url_failed",
+      error: getErrorMessage(error, "analyze_url_failed"),
     });
   }
 }

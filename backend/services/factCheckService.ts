@@ -76,7 +76,32 @@ function relevanceScore(haystack: string, terms: string[]): number {
   return score;
 }
 
-function mapGoogleClaimReviewToSources(payload: any, isDebunkClaim: boolean): VerifiedSource[] {
+interface GoogleClaimReview {
+  url?: unknown;
+  textualRating?: unknown;
+  publisher?: { name?: unknown };
+}
+
+interface GoogleClaim {
+  text?: unknown;
+  claimReview?: GoogleClaimReview[];
+}
+
+interface GoogleFactCheckPayload {
+  claims?: GoogleClaim[];
+}
+
+interface TavilyResult {
+  url?: unknown;
+  title?: unknown;
+  content?: unknown;
+}
+
+interface TavilyPayload {
+  results?: TavilyResult[];
+}
+
+function mapGoogleClaimReviewToSources(payload: GoogleFactCheckPayload | null | undefined, isDebunkClaim: boolean): VerifiedSource[] {
   const claims = Array.isArray(payload?.claims) ? payload.claims : [];
   const out: VerifiedSource[] = [];
 
@@ -105,7 +130,7 @@ function mapGoogleClaimReviewToSources(payload: any, isDebunkClaim: boolean): Ve
   return out;
 }
 
-function mapTavilyToSources(payload: any, isDebunkClaim: boolean): VerifiedSource[] {
+function mapTavilyToSources(payload: TavilyPayload | null | undefined, isDebunkClaim: boolean): VerifiedSource[] {
   const results = Array.isArray(payload?.results) ? payload.results : [];
   const inferStance = (text: string): "support" | "contradict" | "neutral" => {
     const t = text.toLowerCase();
@@ -118,7 +143,7 @@ function mapTavilyToSources(payload: any, isDebunkClaim: boolean): VerifiedSourc
     return "neutral";
   };
 
-  return results.slice(0, 5).map((r: any) => {
+  return results.slice(0, 5).map((r) => {
     const url = typeof r?.url === "string" ? r.url : "";
     const title = typeof r?.title === "string" ? r.title : "Fuente encontrada";
     const content = typeof r?.content === "string" ? r.content : "";
