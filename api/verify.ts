@@ -2,7 +2,7 @@ import { analyzeContent } from "../shared/analyzer.js";
 import { normalizeAnalysisText } from "../shared/textEncoding.js";
 import { validateVerifyBody } from "../shared/validateInput.js";
 import { getSupabaseClient } from "./_lib/supabase.js";
-import { methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
+import { getErrorMessage, methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 import { runFactCheck } from "../backend/services/factCheckService.js";
 import type { VerifiedSource } from "../shared/analyzer.js";
 
@@ -384,18 +384,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       if (data?.id) {
         responsePayload.verificationId = data.id;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Logging failure must not break the verification response, but we expose reason for debugging.
-      storageError = error?.message ?? "verification_log_insert_failed";
+      storageError = getErrorMessage(error, "verification_log_insert_failed");
       console.error("[verify] storage error:", storageError);
     }
 
-    if (storageError) {
-      (responsePayload as any).storageError = storageError;
-    }
-
-    sendJson(res, 200, responsePayload);
-  } catch (error: any) {
-    sendJson(res, 500, { error: error?.message ?? "verification_failed" });
+    sendJson(res, 200, storageError ? { ...responsePayload, storageError } : responsePayload);
+  } catch (error: unknown) {
+    sendJson(res, 500, { error: getErrorMessage(error, "verification_failed") });
   }
 }

@@ -1,4 +1,4 @@
-import { methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
+import { getErrorMessage, methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 import { persistFeedback } from "../backend/services/feedbackService.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
@@ -26,7 +26,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     sendJson(res, 201, { ok: true });
-  } catch (error: any) {
-    sendJson(res, 500, { error: error?.message ?? "feedback_failed" });
+  } catch (error: unknown) {
+    sendJson(res, 500, { error: getErrorMessage(error, "feedback_failed") });
   }
 }

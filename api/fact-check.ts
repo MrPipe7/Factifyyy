@@ -1,5 +1,5 @@
 import type { AnalysisResult } from "../shared/analyzer.js";
-import { methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
+import { getErrorMessage, methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 import path from "node:path";
 import { config as loadDotEnv } from "dotenv";
 import { runFactCheck } from "../backend/services/factCheckService.js";
@@ -23,7 +23,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     const result = await runFactCheck(text);
     sendJson(res, 200, result);
-  } catch (error: any) {
-    sendJson(res, 500, { error: error?.message ?? "fact_check_failed" });
+  } catch (error: unknown) {
+    sendJson(res, 500, { error: getErrorMessage(error, "fact_check_failed") });
   }
 }

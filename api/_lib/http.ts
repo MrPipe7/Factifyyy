@@ -22,6 +22,11 @@ export function sendJson(res: ApiResponse, status: number, data: unknown): void 
   res.end(JSON.stringify(data));
 }
 
+export function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && error.message) return error.message;
+  return fallback;
+}
+
 export function methodNotAllowed(res: ApiResponse): void {
   sendJson(res, 405, { error: "Method not allowed" });
 }
