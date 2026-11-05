@@ -372,9 +372,9 @@
     "id": 42,
     "title": "Dicen que una app regala dinero",
     "text": "Una publicación sostiene que una aplicación entrega dinero por descargarla. No hay términos ni información de la empresa.",
-    "expected_classification": "Dudosa",
+    "expected_classification": "Falsa",
     "validation_source": "Publicación sin respaldo",
-    "notes": "Posible engaño no confirmado.",
+    "notes": "Posible engaño no confirmado. Reetiquetado: patron de estafa o promesa milagrosa.",
     "split": "dev"
   },
   {
@@ -606,9 +606,9 @@
     "id": 68,
     "title": "Un video muestra una supuesta cura milagrosa",
     "text": "Un video muestra a un hombre que dice haber descubierto una cura para varias enfermedades. No presenta estudios ni credenciales.",
-    "expected_classification": "Dudosa",
+    "expected_classification": "Falsa",
     "validation_source": "Sin respaldo",
-    "notes": "Promesa sin evidencia.",
+    "notes": "Promesa sin evidencia. Reetiquetado: patron de estafa o promesa milagrosa.",
     "split": "test"
   },
   {
@@ -624,9 +624,9 @@
     "id": 70,
     "title": "Ofrecen un trabajo muy bien pagado desde casa",
     "text": "Un anuncio ofrece un sueldo alto por trabajar pocas horas desde casa. No se identifica la empresa y piden un pago inicial.",
-    "expected_classification": "Dudosa",
+    "expected_classification": "Falsa",
     "validation_source": "Anuncio sin identificar",
-    "notes": "Posible estafa, no confirmada.",
+    "notes": "Posible estafa, no confirmada. Reetiquetado: patron de estafa o promesa milagrosa.",
     "split": "test"
   },
   {
