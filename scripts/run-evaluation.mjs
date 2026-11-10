@@ -2,6 +2,7 @@ import path from "node:path";
 import { config as loadDotEnv } from "dotenv";
 import { runEvaluationReport } from "../backend/services/evaluationService.ts";
 
+loadDotEnv({ path: path.resolve(process.cwd(), ".env.local") });
 loadDotEnv({ path: path.resolve(process.cwd(), ".env") });
 
 // Usage: npx tsx scripts/run-evaluation.mjs [--split dev|test|all] [--mode local|full|both]
