@@ -1,6 +1,6 @@
 import { analyzeContent } from "../../shared/analyzer.js";
 import type { VerifiedSource } from "../../shared/analyzer.js";
-import { runFactCheck } from "./factCheckService.js";
+import { runFactCheck, type FactCheckResult } from "./factCheckService.js";
 
 function countAlerts(result: ReturnType<typeof analyzeContent>): number {
   return result.signals.filter((s) => s.type === "negative" || s.type === "warning").length;
@@ -208,14 +208,19 @@ function buildEvidenceMiniSummary(
  * Decision pipeline shared by /api/verify and the evaluation script.
  * Order: external fact-check APIs first, then local rules as fallback.
  */
-export async function verifyText(normalizedText: string) {
+export interface VerifyOptions {
+  /** Replaces the external lookup. Return null to skip APIs and use only local rules. */
+  factCheck?: (text: string) => Promise<FactCheckResult | null>;
+}
+
+export async function verifyText(normalizedText: string, options: VerifyOptions = {}) {
   const localResult = analyzeContent(normalizedText);
   const localAlerts = countAlerts(localResult);
   const localSourceDensity = sourceDensityInText(normalizedText);
 
   let enrichedResult = { ...localResult };
   let providers: string[] = [];
-  const factCheckResult = await runFactCheck(normalizedText);
+  const factCheckResult = await (options.factCheck ?? runFactCheck)(normalizedText);
   if (factCheckResult) {
     providers = factCheckResult.providers;
     const hasExternal = factCheckResult.sources.length > 0;
