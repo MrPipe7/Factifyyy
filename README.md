@@ -176,3 +176,11 @@ Implementación de HU06 (FTY-18) para despliegue en Vercel + Supabase:
 ```bash
 npm run dev:vercel
 ```
+
+## Evaluacion del analizador
+
+`npm run test:evaluation -- --split dev|test|all --mode local|full|both`
+
+- `local`: solo reglas locales. `full`: APIs externas (Google Fact Check y Tavily, requieren claves en `.env`) con caida al analisis local.
+- Las respuestas de las APIs se guardan en `.cache/evaluation` para no repetir consultas.
+- `test` es el conjunto de medicion final: no usarlo para ajustar reglas.

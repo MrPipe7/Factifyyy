@@ -24,3 +24,6 @@ npm-debug.log*
 *.pdf
 
 .vercel
+
+# Cache de evaluacion (respuestas de APIs)
+.cache
