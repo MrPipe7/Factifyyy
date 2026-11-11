@@ -34,6 +34,16 @@ export interface EvaluationCaseResult {
   used_external_sources: boolean;
 }
 
+export interface ClassMetrics {
+  /** Cases of this class in the dataset. */
+  support: number;
+  /** Of the cases predicted as this class, the % that really were. */
+  precision: number;
+  /** Of the cases that really were this class, the % found. */
+  recall: number;
+  f1: number;
+}
+
 export interface EvaluationReport {
   split: EvaluationSplit;
   mode: EvaluationMode;
@@ -45,6 +55,8 @@ export interface EvaluationReport {
   false_negatives: number;
   false_negative_rate: number;
   confusion_matrix: Record<ClassLabel, Record<ClassLabel, number>>;
+  /** Precision, recall and F1 per class (0-100), plus the macro average of F1. */
+  metrics: { per_class: Record<ClassLabel, ClassMetrics>; macro_f1: number };
   coverage: { with_external_sources: number; local_fallback: number; total: number };
   /** External providers that were configured (empty in full mode means API keys are missing). */
   providers: string[];
@@ -133,6 +145,19 @@ export async function runEvaluationReport(options: EvaluationOptions = {}): Prom
   const false_positives = confusion_matrix.Confiable.Falsa + confusion_matrix.Confiable.Dudosa;
   const false_negatives = confusion_matrix.Falsa.Confiable + confusion_matrix.Falsa.Dudosa;
   const pct = (n: number, d: number) => (d ? Math.round((n / d) * 100) : 0);
+  const per_class = Object.fromEntries(
+    CLASSES.map((label) => {
+      const tp = confusion_matrix[label][label];
+      const predicted = CLASSES.reduce((sum, e) => sum + confusion_matrix[e][label], 0);
+      const actual = classTotal(label);
+      const precision = predicted ? (tp / predicted) * 100 : 0;
+      const recall = actual ? (tp / actual) * 100 : 0;
+      const f1 = precision + recall ? (2 * precision * recall) / (precision + recall) : 0;
+      const round1 = (n: number) => Math.round(n * 10) / 10;
+      return [label, { support: actual, precision: round1(precision), recall: round1(recall), f1: round1(f1) }];
+    }),
+  ) as Record<ClassLabel, ClassMetrics>;
+  const macro_f1 = Math.round((CLASSES.reduce((s, l) => s + per_class[l].f1, 0) / CLASSES.length) * 10) / 10;
   const withSources = results.filter((r) => r.used_external_sources).length;
 
   return {
@@ -146,6 +171,7 @@ export async function runEvaluationReport(options: EvaluationOptions = {}): Prom
     false_negatives,
     false_negative_rate: pct(false_negatives, classTotal("Falsa")),
     confusion_matrix,
+    metrics: { per_class, macro_f1 },
     coverage: { with_external_sources: withSources, local_fallback: results.length - withSources, total: results.length },
     providers: [...usedProviders],
     results,
