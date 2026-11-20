@@ -1,6 +1,7 @@
 import { analyzeContent } from "../../shared/analyzer.js";
 import type { VerifiedSource } from "../../shared/analyzer.js";
 import { runFactCheck, type FactCheckResult } from "./factCheckService.js";
+import { judgeWithGemini, type LlmJudge } from "./llmVerificationService.js";
 
 function countAlerts(result: ReturnType<typeof analyzeContent>): number {
   return result.signals.filter((s) => s.type === "negative" || s.type === "warning").length;
@@ -205,6 +206,8 @@ function buildEvidenceMiniSummary(
 export interface VerifyOptions {
   /** Replaces the external lookup. Return null to skip APIs and use only local rules. */
   factCheck?: (text: string) => Promise<FactCheckResult | null>;
+  /** LLM judge used when no fact-checker rated the claim. Defaults to Gemini; null disables it. */
+  llm?: LlmJudge | null;
 }
 
 export async function verifyText(normalizedText: string, options: VerifyOptions = {}) {
@@ -379,6 +382,25 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
           irrelevant: 0,
           total: factCheckResult.sources.length,
         },
+      };
+    }
+  }
+
+  // When no fact-checker rated the claim, an LLM weighs the claim against the sources found.
+  // Any failure (no key, quota, timeout, invalid answer) keeps the rules + sources verdict.
+  const judge = options.llm === undefined ? judgeWithGemini : options.llm;
+  const hasDebunkStatement = localResult.signals.some((s) => s.label === "Redacción de desmentido explícito");
+  if (judge && factCheckResult && !factCheckResult.claimReviewMatch && !hasDebunkStatement) {
+    const verdict = await judge(normalizedText, factCheckResult.sources);
+    if (verdict) {
+      enrichedResult = {
+        ...enrichedResult,
+        classification: verdict.classification,
+        explanation: verdict.reason || enrichedResult.explanation,
+        recommendation: buildSourceBasedRecommendation(verdict.classification),
+        engine: "factcheck",
+        analysisOrigin: "Análisis con IA + verificación externa",
+        preliminaryLocal: false,
       };
     }
   }

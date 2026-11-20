@@ -4,10 +4,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { runFactCheck, type FactCheckResult } from "./factCheckService.js";
 import { verifyText } from "./verificationService.js";
+import { judgeWithGemini, type LlmJudge, type LlmVerdict } from "./llmVerificationService.js";
 
 /** dev/test/all: synthetic dataset. real: real claims verified by fact-checkers. */
 export type EvaluationSplit = "dev" | "test" | "all" | "real";
-export type EvaluationMode = "local" | "full";
+/** local: rules only. full: external APIs + local fallback. llm: full + LLM judge (needs GEMINI_API_KEY). */
+export type EvaluationMode = "local" | "full" | "llm";
 export type ClassLabel = "Confiable" | "Dudosa" | "Falsa";
 
 export interface EvaluationOptions {
@@ -98,6 +100,32 @@ function createCachedFactCheck(cacheDir: string | null) {
   };
 }
 
+/** Caches successful LLM verdicts (failures are never cached) so reruns do not spend quota. */
+function createCachedLlmJudge(cacheDir: string | null): LlmJudge {
+  return async (claim, sources) => {
+    const file = cacheDir
+      ? path.join(cacheDir, "llm", `${createHash("sha1").update(claim).digest("hex")}.json`)
+      : null;
+    if (file) {
+      try {
+        return JSON.parse(await fs.readFile(file, "utf-8")) as LlmVerdict;
+      } catch {
+        // cache miss
+      }
+    }
+    const verdict = await judgeWithGemini(claim, sources);
+    if (verdict && file) {
+      try {
+        await fs.mkdir(path.dirname(file), { recursive: true });
+        await fs.writeFile(file, JSON.stringify(verdict));
+      } catch {
+        // read-only filesystem: continue without caching
+      }
+    }
+    return verdict;
+  };
+}
+
 async function mapWithConcurrency<T, R>(items: T[], limit: number, task: (item: T) => Promise<R>): Promise<R[]> {
   const out: R[] = new Array(items.length);
   let next = 0;
@@ -120,11 +148,12 @@ export async function runEvaluationReport(options: EvaluationOptions = {}): Prom
   const all = JSON.parse(await fs.readFile(dataPath, "utf-8")) as DatasetCase[];
   const cases = split === "all" || split === "real" ? all : all.filter((c) => c.split === split);
 
-  const factCheck = mode === "full" ? createCachedFactCheck(cacheDir) : async () => null;
+  const factCheck = mode === "local" ? async () => null : createCachedFactCheck(cacheDir);
+  const llm = mode === "llm" ? createCachedLlmJudge(cacheDir) : null;
 
   const usedProviders = new Set<string>();
   const results = await mapWithConcurrency(cases, options.concurrency ?? 4, async (c): Promise<EvaluationCaseResult> => {
-    const { result, providers } = await verifyText(c.text, { factCheck });
+    const { result, providers } = await verifyText(c.text, { factCheck, llm });
     providers.forEach((p) => usedProviders.add(p));
     const expected = toLabel(c.expected_classification);
     const obtained = toLabel(result.classification);

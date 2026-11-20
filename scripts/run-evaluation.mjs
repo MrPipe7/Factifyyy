@@ -16,7 +16,7 @@ function arg(name, fallback) {
 const split = arg("split", "dev");
 const modeArg = arg("mode", "local");
 const save = process.argv.includes("--save");
-const modes = modeArg === "both" ? ["local", "full"] : [modeArg];
+const modes = modeArg === "both" ? ["local", "full"] : modeArg === "all" ? ["local", "full", "llm"] : [modeArg];
 const pad = (v, n) => String(v).padEnd(n);
 
 for (const mode of modes) {

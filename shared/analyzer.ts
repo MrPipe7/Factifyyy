@@ -10,6 +10,7 @@ export type VerificationEngine = "local" | "factcheck";
 export type AnalysisOrigin =
   | "Análisis textual local"
   | "Análisis textual + verificación externa"
+  | "Análisis con IA + verificación externa"
   | "Verificación externa encontrada"
   | "Sin verificación externa disponible";
 
