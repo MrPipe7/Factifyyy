@@ -1,10 +1,36 @@
 import type { VerifiedSource } from "../../shared/analyzer.js";
 
+export type ClaimVerdict = "falso" | "dudoso" | "verdadero";
+
+/** Rating given by a fact-checker to a claim equivalent to the analyzed text. */
+export interface ClaimReviewMatch {
+  verdict: ClaimVerdict;
+  /** Overlap (0-1) between the analyzed text and the reviewed claim. */
+  similarity: number;
+  publisher: string;
+  rating: string;
+  url: string;
+}
+
 export interface FactCheckResult {
   sources: VerifiedSource[];
   providers: string[];
   claimReviewMatches: number;
   claimReviewContradictions: number;
+  claimReviewMatch?: ClaimReviewMatch;
+}
+
+/** Maps a fact-checker's textual rating to a verdict. Unknown ratings return null. */
+export function ratingToVerdict(rating: string): ClaimVerdict | null {
+  const r = rating
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+  if (/^(falso|falsa|bulo|fake|false|mentira|no hay pruebas|sin pruebas|sin evidencia|incorrecto|incorrect)/.test(r)) return "falso";
+  if (/^(enganoso|misleading|contexto|impreciso|cuestionable|exagerado|discutible|verdad a medias|necesita contexto|falta contexto|distorsiona|sin contexto|inexacto|mixto|parcialmente)/.test(r)) return "dudoso";
+  if (/^(verdadero|verdadera|cierto|verdad|real|correcto|true|accurate)\b/.test(r)) return "verdadero";
+  return null;
 }
 
 function isDebunkFramedClaim(text: string): boolean {
@@ -111,10 +137,9 @@ function mapGoogleClaimReviewToSources(payload: GoogleFactCheckPayload | null | 
       const url = typeof review?.url === "string" ? review.url : "";
       if (!url) continue;
       const rating = typeof review?.textualRating === "string" ? review.textualRating.toLowerCase() : "";
+      const verdict = ratingToVerdict(rating);
       const baseStance: "support" | "contradict" | "neutral" =
-        /false|falso|incorrect|engaños|misleading|fake/.test(rating)
-          ? "contradict"
-          : "support";
+        verdict === "falso" ? "contradict" : verdict === "verdadero" ? "support" : "neutral";
       const stance = adjustStanceByClaimFrame(baseStance, isDebunkClaim);
 
       out.push({
@@ -163,12 +188,59 @@ function mapTavilyToSources(payload: TavilyPayload | null | undefined, isDebunkC
   }).filter((x: VerifiedSource) => Boolean(x.url));
 }
 
-async function queryGoogleFactCheck(text: string, apiKey: string): Promise<VerifiedSource[]> {
+/** Finds the reviewed claim most similar to the analyzed text and returns the fact-checker's verdict. */
+function bestClaimReviewMatch(
+  payload: GoogleFactCheckPayload | null | undefined,
+  text: string,
+  isDebunkClaim: boolean,
+): ClaimReviewMatch | undefined {
+  const claims = Array.isArray(payload?.claims) ? payload.claims : [];
+  const queryTerms = new Set(extractQueryTerms(text));
+  if (queryTerms.size < 3) return undefined;
+
+  let best: ClaimReviewMatch | undefined;
+  for (const claim of claims) {
+    if (typeof claim?.text !== "string") continue;
+    const claimTerms = new Set(extractQueryTerms(claim.text));
+    if (claimTerms.size < 3) continue;
+    let shared = 0;
+    for (const t of claimTerms) if (queryTerms.has(t)) shared += 1;
+    const similarity = shared / Math.min(queryTerms.size, claimTerms.size);
+    const reviews = Array.isArray(claim.claimReview) ? claim.claimReview : [];
+    for (const review of reviews) {
+      const rating = typeof review?.textualRating === "string" ? review.textualRating : "";
+      const url = typeof review?.url === "string" ? review.url : "";
+      let verdict = ratingToVerdict(rating);
+      if (!verdict || !url) continue;
+      // "Es falso que X" confirmed as false by a fact-checker means the text is right.
+      if (isDebunkClaim && verdict !== "dudoso") verdict = verdict === "falso" ? "verdadero" : "falso";
+      if (!best || similarity > best.similarity) {
+        best = {
+          verdict,
+          similarity,
+          rating,
+          url,
+          publisher: typeof review?.publisher?.name === "string" ? review.publisher.name : normalizePublisher(url),
+        };
+      }
+    }
+  }
+  return best && best.similarity >= 0.6 ? best : undefined;
+}
+
+async function queryGoogleFactCheck(
+  text: string,
+  apiKey: string,
+): Promise<{ sources: VerifiedSource[]; match?: ClaimReviewMatch }> {
   const endpoint = `https://factchecktools.googleapis.com/v1alpha1/claims:search?query=${encodeURIComponent(text)}&languageCode=es&key=${apiKey}`;
   const response = await fetch(endpoint);
   if (!response.ok) throw new Error(`google_fact_check_${response.status}`);
   const payload = await response.json();
-  return mapGoogleClaimReviewToSources(payload, isDebunkFramedClaim(text));
+  const isDebunk = isDebunkFramedClaim(text);
+  return {
+    sources: mapGoogleClaimReviewToSources(payload, isDebunk),
+    match: bestClaimReviewMatch(payload, text, isDebunk),
+  };
 }
 
 async function queryTavily(text: string, apiKey: string): Promise<VerifiedSource[]> {
@@ -204,8 +276,9 @@ export async function runFactCheck(text: string): Promise<FactCheckResult> {
 
   const terms = extractQueryTerms(text);
   const relaxedQuery = buildRelaxedQuery(text);
-  const [googleSourcesRaw, tavilySourcesRaw] = await Promise.all([
-    googleKey ? withSingleRetry(() => queryGoogleFactCheck(text, googleKey)).catch(() => []) : Promise.resolve([]),
+  const emptyGoogle: { sources: VerifiedSource[]; match?: ClaimReviewMatch } = { sources: [] };
+  const [googleResult, tavilySourcesRaw] = await Promise.all([
+    googleKey ? withSingleRetry(() => queryGoogleFactCheck(text, googleKey)).catch(() => emptyGoogle) : Promise.resolve(emptyGoogle),
     tavilyKey ? withSingleRetry(() => queryTavily(text, tavilyKey)).catch(() => []) : Promise.resolve([]),
   ]);
   const tavilyRelaxed =
@@ -214,7 +287,7 @@ export async function runFactCheck(text: string): Promise<FactCheckResult> {
       : [];
   const mergedTavilyRaw = [...tavilySourcesRaw, ...tavilyRelaxed];
 
-  const googleSources = googleSourcesRaw.filter((s) => {
+  const googleSources = googleResult.sources.filter((s) => {
     const combined = `${s.title} ${s.snippet ?? ""} ${s.publisher ?? ""}`;
     return relevanceScore(combined, terms) >= 1;
   });
@@ -239,5 +312,6 @@ export async function runFactCheck(text: string): Promise<FactCheckResult> {
     providers,
     claimReviewMatches,
     claimReviewContradictions,
+    claimReviewMatch: googleResult.match,
   };
 }

@@ -234,7 +234,30 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
       sourceContradict >= 2 && sourceContradict >= sourceSupport + 1;
     const hasOfficialCoincidences = factCheckResult.claimReviewMatches >= 2;
 
-    if (hasOfficialCoincidences) {
+    const reviewMatch = factCheckResult.claimReviewMatch;
+    if (reviewMatch) {
+      // A fact-checker already rated an equivalent claim: that verdict is the strongest evidence available.
+      const verdictClassification: "confiable" | "dudoso" | "falso" =
+        reviewMatch.verdict === "falso" ? "falso" : reviewMatch.verdict === "verdadero" ? "confiable" : "dudoso";
+      enrichedResult = {
+        ...localResult,
+        classification: verdictClassification,
+        confidence: verdictClassification === "dudoso" ? 70 : 92,
+        explanation: `${reviewMatch.publisher} (verificador) calificó como «${reviewMatch.rating}» una afirmación equivalente a la analizada. ${buildEvidenceMiniSummary(factCheckResult.sources, verdictClassification, normalizedText)}`.trim(),
+        recommendation: buildSourceBasedRecommendation(verdictClassification),
+        engine: "factcheck",
+        analysisOrigin: "Verificación externa encontrada",
+        preliminaryLocal: false,
+        sources: factCheckResult.sources,
+        sourceStats: {
+          support: sourceSupport,
+          contradict: sourceContradict,
+          neutral: sourceNeutral,
+          irrelevant: 0,
+          total: factCheckResult.sources.length,
+        },
+      };
+    } else if (hasOfficialCoincidences) {
       const baseExplanation =
         "Se detectaron dos o más coincidencias en agencias de verificación (ClaimReview), lo que respalda la credibilidad del contenido.";
       enrichedResult = {
@@ -293,7 +316,8 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
         effectiveClassification = localClassification;
         resolvedBy = "local";
       } else if (
-        (sourceDrivenClassification === "confiable" && localClassification === "falso") ||
+        // Be prudent: "confiable" needs the content analysis to agree (media search results are noisy).
+        (sourceDrivenClassification === "confiable" && localClassification !== "confiable") ||
         (sourceDrivenClassification === "falso" && localClassification === "confiable")
       ) {
         // Sources and content analysis disagree: do not claim certainty.
