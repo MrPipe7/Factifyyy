@@ -184,3 +184,4 @@ npm run dev:vercel
 - `local`: solo reglas locales. `full`: APIs externas (Google Fact Check y Tavily, requieren claves en `.env`) con caida al analisis local.
 - Las respuestas de las APIs se guardan en `.cache/evaluation` para no repetir consultas.
 - `test` es el conjunto de medicion final: no usarlo para ajustar reglas.
+- `--save` guarda el reporte (matriz, precision, recall y F1 por clase) en `.cache/reports` sin sobrescribir los anteriores.
