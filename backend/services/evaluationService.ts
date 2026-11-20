@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { runFactCheck, type FactCheckResult } from "./factCheckService.js";
 import { verifyText } from "./verificationService.js";
 
-export type EvaluationSplit = "dev" | "test" | "all";
+/** dev/test/all: synthetic dataset. real: real claims verified by fact-checkers. */
+export type EvaluationSplit = "dev" | "test" | "all" | "real";
 export type EvaluationMode = "local" | "full";
 export type ClassLabel = "Confiable" | "Dudosa" | "Falsa";
 
@@ -66,6 +67,7 @@ export interface EvaluationReport {
 const CLASSES: ClassLabel[] = ["Confiable", "Dudosa", "Falsa"];
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DATASET_PATH = path.join(here, "../../data/evaluation_dataset.json");
+const REAL_DATASET_PATH = path.join(here, "../../data/evaluation_real.json");
 
 function toLabel(value: string): ClassLabel {
   const lower = value.toLowerCase();
@@ -114,8 +116,9 @@ export async function runEvaluationReport(options: EvaluationOptions = {}): Prom
   const mode = options.mode ?? "local";
   const cacheDir = options.cacheDir === undefined ? path.join(process.cwd(), ".cache", "evaluation") : options.cacheDir;
 
-  const all = JSON.parse(await fs.readFile(DATASET_PATH, "utf-8")) as DatasetCase[];
-  const cases = split === "all" ? all : all.filter((c) => c.split === split);
+  const dataPath = split === "real" ? REAL_DATASET_PATH : DATASET_PATH;
+  const all = JSON.parse(await fs.readFile(dataPath, "utf-8")) as DatasetCase[];
+  const cases = split === "all" || split === "real" ? all : all.filter((c) => c.split === split);
 
   const factCheck = mode === "full" ? createCachedFactCheck(cacheDir) : async () => null;
 

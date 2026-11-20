@@ -1,7 +1,7 @@
 import { runEvaluationReport, type EvaluationMode, type EvaluationSplit } from "../backend/services/evaluationService.js";
 import { getErrorMessage, methodNotAllowed, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 
-const SPLITS: EvaluationSplit[] = ["dev", "test", "all"];
+const SPLITS: EvaluationSplit[] = ["dev", "test", "all", "real"];
 const MODES: EvaluationMode[] = ["local", "full"];
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {

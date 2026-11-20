@@ -1,0 +1,1082 @@
+[
+  {
+    "id": 1001,
+    "title": "40% de contagios con COVID-19 en Sucumbíos tienen la variante británic",
+    "text": "40% de contagios con COVID-19 en Sucumbíos tienen la variante británica",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1002,
+    "title": "En Europa están proponiendo mezclar vacunas contra el covid-19 para co",
+    "text": "En Europa están proponiendo mezclar vacunas contra el covid-19 para completar las dosis de AstraZeneca",
+    "expected_classification": "Confiable",
+    "validation_source": "Univision: Verdad",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1003,
+    "title": "Informes internacionales prevén que vacunación contra la Covid – 19 en",
+    "text": "Informes internacionales prevén que vacunación contra la Covid – 19 en Bolivia culminará en 2023",
+    "expected_classification": "Confiable",
+    "validation_source": "Bolivia Verifica: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1004,
+    "title": "En Ecuador y en Perú se registra un incremento de contagios de Covid-1",
+    "text": "En Ecuador y en Perú se registra un incremento de contagios de Covid-19",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1005,
+    "title": "Un joven indígena llevó a su padre a cuestas a un centro de vacunación",
+    "text": "Un joven indígena llevó a su padre a cuestas a un centro de vacunación de covid en la Amazonia brasileña en un trayecto de ida y vuelta que se prolongó durante doce horas.",
+    "expected_classification": "Confiable",
+    "validation_source": "EFE Verifica: Verdad.",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1006,
+    "title": "Las muertes de personas mayores por COVID-19 han bajado un 80% desde e",
+    "text": "Las muertes de personas mayores por COVID-19 han bajado un 80% desde enero”.",
+    "expected_classification": "Confiable",
+    "validation_source": "Telemundo: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1007,
+    "title": "ABC asegura que Huévar del Aljarafe, una localidad sevillana que organ",
+    "text": "ABC asegura que Huévar del Aljarafe, una localidad sevillana que organizó un bus para acudir de público a una entrevista de Sánchez, está gobernada por el PSOE, pese a que el PP ganó las elecciones municipales de 2023.",
+    "expected_classification": "Confiable",
+    "validation_source": "EFE Verifica: Verdad.",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1008,
+    "title": "La Junta Electoral ha obligado a Pedro Sánchez a retirar un vídeo en e",
+    "text": "La Junta Electoral ha obligado a Pedro Sánchez a retirar un vídeo en el que manifiesta el rechazo de España a la guerra con el Guernica de fondo",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1009,
+    "title": "Sería falso decirle a una persona en su centro de votación que no pued",
+    "text": "Sería falso decirle a una persona en su centro de votación que no puede votar sobre la Enmienda 3 de Florida por el distrito donde vive.",
+    "expected_classification": "Confiable",
+    "validation_source": "Factchequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1010,
+    "title": "En Colorado se recomienda depositar el voto para las midterms en un bu",
+    "text": "En Colorado se recomienda depositar el voto para las midterms en un buzón electoral o hacerlo en persona después del 26 de octubre de 2026",
+    "expected_classification": "Confiable",
+    "validation_source": "Factchequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1011,
+    "title": "Exdiputado Daniel Farcas fue candidato a diputado en las elecciones de",
+    "text": "Exdiputado Daniel Farcas fue candidato a diputado en las elecciones de Israel",
+    "expected_classification": "Confiable",
+    "validation_source": "Fast Check: Real",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1012,
+    "title": "El Tribunal Supremo prohíbe a los nacionalizados por la \"Ley de Nietos",
+    "text": "El Tribunal Supremo prohíbe a los nacionalizados por la \"Ley de Nietos\" votar en las elecciones generales del 29-N",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1013,
+    "title": "El Gobierno de Sánchez vende a un fondo privado un terreno de 700.000m",
+    "text": "El Gobierno de Sánchez vende a un fondo privado un terreno de 700.000m² de suelo público en el que prometió construir vivienda social",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1014,
+    "title": "Las Empresas vinculadas a la familia Noboa sí figuran en listado de in",
+    "text": "Las Empresas vinculadas a la familia Noboa sí figuran en listado de incumplimientos eléctricos atribuido al Gobierno",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1015,
+    "title": "Actual Gobierno suma 10 vuelos de expulsión; mientras que el anterior ",
+    "text": "Actual Gobierno suma 10 vuelos de expulsión; mientras que el anterior no registraba ninguno a la misma fecha",
+    "expected_classification": "Confiable",
+    "validation_source": "Fast Check: Real",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1016,
+    "title": "Pedro Sánchez renuncia a más de 3.000 millones de créditos Next Genera",
+    "text": "Pedro Sánchez renuncia a más de 3.000 millones de créditos Next Generation para vivienda social alegando \"falta de demanda",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1017,
+    "title": "Sánchez vendió a Lar y a Blackrock un edificio de Hacienda en el barri",
+    "text": "Sánchez vendió a Lar y a Blackrock un edificio de Hacienda en el barrio de Salamanca para hacer viviendas de lujo y una residencia",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1018,
+    "title": "El gobierno gastó más de 250 millones de pesos en compra de carnes, ba",
+    "text": "El gobierno gastó más de 250 millones de pesos en compra de carnes, banderas de escritorio y pines metálicos",
+    "expected_classification": "Confiable",
+    "validation_source": "Fast Check: Real",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1019,
+    "title": "el Departamento de Salud de Florida emitió una alerta por casos de den",
+    "text": "el Departamento de Salud de Florida emitió una alerta por casos de dengue de transmisión local",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1020,
+    "title": "Sí hubo una reducción de más de USD 2.000 millones en el presupuesto d",
+    "text": "Sí hubo una reducción de más de USD 2.000 millones en el presupuesto de salud al cierre de 2025",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1021,
+    "title": "En la Ciudad de México las personas [...] sin acceso a los servicios d",
+    "text": "En la Ciudad de México las personas [...] sin acceso a los servicios de salud pasaron de ser 1.8 millones a 2.6 millones. Cuando inició el gobierno de la doctora Sheinbaum, dos de cada 10 capitalinos no tenían acceso [...]; cuando lo terminó, tres de cada 10”.",
+    "expected_classification": "Confiable",
+    "validation_source": "Univision: Verdad",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1022,
+    "title": "Jorge Glas aseguró que sufre \"discriminación\" por parte del Ministerio",
+    "text": "Jorge Glas aseguró que sufre \"discriminación\" por parte del Ministerio de Salud",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1023,
+    "title": "Argentina tiene el sistema de seguridad [social], la cobertura de salu",
+    "text": "Argentina tiene el sistema de seguridad [social], la cobertura de salud, de educación y alimentaria más amplia de América Latina",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1024,
+    "title": "Banco Central proyectó un crecimiento de 2,5% para 2026, pero actualme",
+    "text": "Banco Central proyectó un crecimiento de 2,5% para 2026, pero actualmente la economía crece en torno al 0%, como afirmó el exministro Grau",
+    "expected_classification": "Confiable",
+    "validation_source": "Fast Check: Real",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1025,
+    "title": "La economía está más arriba de lo que la recibimos",
+    "text": "La economía está más arriba de lo que la recibimos",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1026,
+    "title": "[El DNU de $ 160 mil millones] equivale a un tercio de todo el dinero ",
+    "text": "[El DNU de $ 160 mil millones] equivale a un tercio de todo el dinero que circula en nuestra economía",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1027,
+    "title": "Es mucho más económico para el Estado aprobar este proyecto hoy, a que",
+    "text": "Es mucho más económico para el Estado aprobar este proyecto hoy, a que sigan habiendo abortos clandestinos",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1028,
+    "title": "Nuestra economía creció a un ritmo del 5.7% el año pasado, el mayor cr",
+    "text": "Nuestra economía creció a un ritmo del 5.7% el año pasado, el mayor crecimiento en casi 40 años”.",
+    "expected_classification": "Confiable",
+    "validation_source": "Univision: Verdad/ Falta contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1029,
+    "title": "Felipe González quiso recetar el 155 a Canarias por incumplir el Régim",
+    "text": "Felipe González quiso recetar el 155 a Canarias por incumplir el Régimen Económico Fiscal",
+    "expected_classification": "Confiable",
+    "validation_source": "Newtral: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1030,
+    "title": "47,7 es el crecimiento de la economía [de Chaco] en 4 años, versus 50,",
+    "text": "47,7 es el crecimiento de la economía [de Chaco] en 4 años, versus 50,8 en 57 años anteriores",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero, pero…",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1031,
+    "title": "Cifras reales y engañosas sobre la economía del país marcaron el prime",
+    "text": "Cifras reales y engañosas sobre la economía del país marcaron el primer discurso de Luis Arce",
+    "expected_classification": "Confiable",
+    "validation_source": "Bolivia Verifica: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1032,
+    "title": "En el contexto de América Latina, Chile tuvo una de las menores contra",
+    "text": "En el contexto de América Latina, Chile tuvo una de las menores contracciones de su economía el año 2020 y tendrá una de las mayores recuperaciones durante este 2021",
+    "expected_classification": "Confiable",
+    "validation_source": "Fast Check: Real",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1033,
+    "title": "Rosa, la ganadora de Pasapalabra dice que no le da rabia dar un millón",
+    "text": "Rosa, la ganadora de Pasapalabra dice que no le da rabia dar un millón y medio de su premio de 2,7 millones a Hacienda porque gracias a los impuestos tenemos \"un gran sistema de servicios públicos",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1034,
+    "title": "Los inmigrantes indocumentados pagan impuestos en Estados Unidos",
+    "text": "Los inmigrantes indocumentados pagan impuestos en Estados Unidos",
+    "expected_classification": "Confiable",
+    "validation_source": "Factchequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1035,
+    "title": "Mi gobierno sacó los impuestos internos que beneficiaban aún más a Tie",
+    "text": "Mi gobierno sacó los impuestos internos que beneficiaban aún más a Tierra del Fuego",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1036,
+    "title": "Los impuestos progresivos representaban el 23% [en los ´90], y ahora r",
+    "text": "Los impuestos progresivos representaban el 23% [en los ´90], y ahora representan el 43% del total de la recaudación",
+    "expected_classification": "Confiable",
+    "validation_source": "Chequeado: Verdadero, pero…",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1037,
+    "title": "El director del SRI anunció que los influencers pagarán impuestos",
+    "text": "El director del SRI anunció que los influencers pagarán impuestos",
+    "expected_classification": "Confiable",
+    "validation_source": "Ecuador Chequea: Cierto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1038,
+    "title": "Biden dijo que 'no se aumentarían nuevos impuestos' a quien gane menos",
+    "text": "Biden dijo que 'no se aumentarían nuevos impuestos' a quien gane menos de $400,000",
+    "expected_classification": "Confiable",
+    "validation_source": "Univision: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1039,
+    "title": "Cuatro inmigrantes apuñalan a un vecino de Ceuta tras intentar robarle",
+    "text": "Cuatro inmigrantes apuñalan a un vecino de Ceuta tras intentar robarle",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1040,
+    "title": "Niñas menores tienen que ser atendidas en el hospital de Ceuta por vio",
+    "text": "Niñas menores tienen que ser atendidas en el hospital de Ceuta por violaciones de inmigrantes tras el salto del 30 de julio",
+    "expected_classification": "Confiable",
+    "validation_source": "Maldita.es: Verdadero",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1041,
+    "title": "Vacuna experimental contra el Alzheimer mostró resultados en animales,",
+    "text": "Vacuna experimental contra el Alzheimer mostró resultados en animales, pero no ha probado prevenir la enfermedad en humanos",
+    "expected_classification": "Dudosa",
+    "validation_source": "Ecuador Chequea: Impreciso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1042,
+    "title": "Los pediatras ganaron millones con las vacunas contra el Covid...",
+    "text": "Los pediatras ganaron millones con las vacunas contra el Covid...",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factico: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1043,
+    "title": "Las vacunas contra el meningococo en Uruguay no son seguras",
+    "text": "Las vacunas contra el meningococo en Uruguay no son seguras",
+    "expected_classification": "Dudosa",
+    "validation_source": "AFP Factual: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1044,
+    "title": "Estados Unidos administra muchas más vacunas infantiles que Europa.",
+    "text": "Estados Unidos administra muchas más vacunas infantiles que Europa.",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factico: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1045,
+    "title": "Es sospechoso que el mismo Estado que obliga a vacunarse ahora regala ",
+    "text": "Es sospechoso que el mismo Estado que obliga a vacunarse ahora regala las gafas para ver el eclipse",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1046,
+    "title": "Las personas mayores de 60 años no se pueden vacunar de fiebre amarill",
+    "text": "Las personas mayores de 60 años no se pueden vacunar de fiebre amarilla porque se mueren",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1047,
+    "title": "Un hombre logra curar el cáncer de su perra con ChatGPT en Australia",
+    "text": "Un hombre logra curar el cáncer de su perra con ChatGPT en Australia",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1048,
+    "title": "La peste porcina africana ha aparecido en la misma zona de Barcelona e",
+    "text": "La peste porcina africana ha aparecido en la misma zona de Barcelona en la que los animalistas probaron la vacuna anticonceptiva Gonacon para jabalíes",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1049,
+    "title": "Un estudio coreano demuestra que la vacuna contra la COVID-19 causa cá",
+    "text": "Un estudio coreano demuestra que la vacuna contra la COVID-19 causa cáncer",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1050,
+    "title": "La Comisión Europea admitió que las vacunas contra el coronavirus se a",
+    "text": "La Comisión Europea admitió que las vacunas contra el coronavirus se aprobaron sin datos de seguridad completos",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factico: Engañoso. La Comisión Europea explicó que las primeras vacunas contra la COVID-19 se autorizaron de forma condicional, conforme a la legislación europea, mientras seguía recopilándose información complementaria, pero solo tras demostrarse que sus beneficios superaban los riesgos conocidos hasta el momento.",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1051,
+    "title": "La vacuna triple vírica (MMR) contiene muchos restos de fetos abortado",
+    "text": "La vacuna triple vírica (MMR) contiene muchos restos de fetos abortados",
+    "expected_classification": "Dudosa",
+    "validation_source": "Verificat: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1052,
+    "title": "Una nueva versión de un estudio \"censurado\" en 2023 por The Lancet dem",
+    "text": "Una nueva versión de un estudio \"censurado\" en 2023 por The Lancet demuestra que las vacunas contra el covid-19 causan muertes masivas y repentinas",
+    "expected_classification": "Dudosa",
+    "validation_source": "AFP Factual: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1053,
+    "title": "La vacuna mexicana Patria contra COVID-19 ya se aprobó por los especia",
+    "text": "La vacuna mexicana Patria contra COVID-19 ya se aprobó por los especial...",
+    "expected_classification": "Dudosa",
+    "validation_source": "Animal Político: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1054,
+    "title": "Se acabó la vacunación obligatoria (...) Se ha votado una resolución d",
+    "text": "Se acabó la vacunación obligatoria (...) Se ha votado una resolución del Consejo de Europa que prohíbe a los Estados la obligatoriedad de la vacunación contra el coronavirus",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1055,
+    "title": "Nueve de cada 10 vacunas que llegan a Latinoamérica vienen de España",
+    "text": "Nueve de cada 10 vacunas que llegan a Latinoamérica vienen de España",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1056,
+    "title": "El coronavirus ya ha existido en mascotas y ya hay vacuna",
+    "text": "El coronavirus ya ha existido en mascotas y ya hay vacuna",
+    "expected_classification": "Dudosa",
+    "validation_source": "ColombiaCheck: Cuestionable",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1057,
+    "title": "Un informe del Congreso de EEUU confirmó que el origen de laboratorio ",
+    "text": "Un informe del Congreso de EEUU confirmó que el origen de laboratorio del SARS-COV-2 no es una teoría de la conspiración y no había evidencia para confinamientos y mascarillas",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1058,
+    "title": "El brote de hantavirus puede tener las mismas consecuencias que tuvo e",
+    "text": "El brote de hantavirus puede tener las mismas consecuencias que tuvo el covid en 2020",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1059,
+    "title": "Las más de 15.000 muertes registradas por la Agencia Europea de Medica",
+    "text": "Las más de 15.000 muertes registradas por la Agencia Europea de Medicamentos (EMA) están vinculadas con las vacunas contra el covd-19 en Europa",
+    "expected_classification": "Dudosa",
+    "validation_source": "AFP Factual: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1060,
+    "title": "La OMS reconoció la efectividad de la ivermectina contra el covid-19",
+    "text": "La OMS reconoció la efectividad de la ivermectina contra el covid-19",
+    "expected_classification": "Dudosa",
+    "validation_source": "AFP Factual: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1061,
+    "title": "El test del coronavirus en EEUU cuesta 3.000 dólares",
+    "text": "El test del coronavirus en EEUU cuesta 3.000 dólares",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1062,
+    "title": "(A Feijóo) Usted en su programa electoral también plantea elevar el ga",
+    "text": "(A Feijóo) Usted en su programa electoral también plantea elevar el gasto en defensa al 5% del PIB",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1063,
+    "title": "La Junta Electoral de Republica Dominicana emite un informe contra Ind",
+    "text": "La Junta Electoral de Republica Dominicana emite un informe contra Indra donde la acusa de múltiples fraudes electorales.",
+    "expected_classification": "Dudosa",
+    "validation_source": "AFP Factual: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1064,
+    "title": "El programa electoral de Feijóo propone reformar la Constitución para ",
+    "text": "El programa electoral de Feijóo propone reformar la Constitución para recentralizar el Estado, aplicar una nueva Ley Mordaza y recortar pensiones y sueldos públicos",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1065,
+    "title": "El diputado federal brasileño André Janones ha confirmado que embarca ",
+    "text": "El diputado federal brasileño André Janones ha confirmado que embarca este domingo hacia Madrid para ayudar a Pedro Sánchez en las elecciones generales del 29 de noviembre",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1066,
+    "title": "El Gobierno consigue que se utilice su aplicación del DNI digital en l",
+    "text": "El Gobierno consigue que se utilice su aplicación del DNI digital en las elecciones eliminando los controles que evitarían un pucherazo",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1067,
+    "title": "El Gobierno coló en el BOE en pleno luto de Urda la recuperación del D",
+    "text": "El Gobierno coló en el BOE en pleno luto de Urda la recuperación del DNI digital para votar el 29-N",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1068,
+    "title": "Netanyahu perdió, a pesar de todas sus artimañas, las elecciones en Is",
+    "text": "Netanyahu perdió, a pesar de todas sus artimañas, las elecciones en Israel",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1069,
+    "title": "Los demócratas sí se impusieron en las elecciones de medio término par",
+    "text": "Los demócratas sí se impusieron en las elecciones de medio término para el Senado, pero la diferencia no fue de 64 escaños frente a 31 de los republicanos",
+    "expected_classification": "Dudosa",
+    "validation_source": "Fast Check: Impreciso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1070,
+    "title": "Votante percibe lento el conteo de su boleta electoral en la votación ",
+    "text": "Votante percibe lento el conteo de su boleta electoral en la votación anticipada en Colorado y advierte a otras personas de depositar las suyas para asegurarse de que sean contadas “antes de la fecha límite",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factchequeado: Necesita contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1071,
+    "title": "La Casa Blanca publicó un mensaje en X en el que afirma que hay “al me",
+    "text": "La Casa Blanca publicó un mensaje en X en el que afirma que hay “al menos 20,000 personas que no son ciudadanas en el padrón electoral de California",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factchequeado: Necesita contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1072,
+    "title": "Stella Parton dijo que la máquina de votación no la dejaba votar por q",
+    "text": "Stella Parton dijo que la máquina de votación no la dejaba votar por quien quería",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factchequeado: Necesita contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1073,
+    "title": "Demócratas enviaron 8,000 boletas de votación por correo duplicadas en",
+    "text": "Demócratas enviaron 8,000 boletas de votación por correo duplicadas en California",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factchequeado: Necesita contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1074,
+    "title": "La integridad electoral de las midterms está comprometida por el halla",
+    "text": "La integridad electoral de las midterms está comprometida por el hallazgo de 92 boletas en un contenedor en Golden Gardens, Seattle",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factchequeado: Necesita contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1075,
+    "title": "Es un escándalo electoral que 28 personas hayan sido acusadas en Calif",
+    "text": "Es un escándalo electoral que 28 personas hayan sido acusadas en California por votar ilegalmente en elecciones federales",
+    "expected_classification": "Dudosa",
+    "validation_source": "Factchequeado: Necesita contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1076,
+    "title": "El retraso en el cierre de las urnas en las elecciones de Brasil se hi",
+    "text": "El retraso en el cierre de las urnas en las elecciones de Brasil se hizo para favorecer a Lula da Silva",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1077,
+    "title": "La ampliación del horario de votación en las elecciones presidenciales",
+    "text": "La ampliación del horario de votación en las elecciones presidenciales de Brasil permitió que Lula obtuviera más votos y saliese favorecido en los resultados",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1078,
+    "title": "Este vídeo muestra al alcalde de Calatayud, José Manuel Aranda Lassa (",
+    "text": "Este vídeo muestra al alcalde de Calatayud, José Manuel Aranda Lassa (PP), pidiendo el voto para Pedro Sánchez en las elecciones del 29N.",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1079,
+    "title": "Este vídeo muestra a una mujer quejándose de que hay musulmanes que vo",
+    "text": "Este vídeo muestra a una mujer quejándose de que hay musulmanes que votan desde Bélgica en las elecciones de España del 29N.",
+    "expected_classification": "Dudosa",
+    "validation_source": "Newtral: Engañoso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1080,
+    "title": "Musulmanes a los que el Gobierno ha dado pasaporte español están votan",
+    "text": "Musulmanes a los que el Gobierno ha dado pasaporte español están votando en el consulado de Bélgica para las elecciones generales del 29 de noviembre",
+    "expected_classification": "Dudosa",
+    "validation_source": "Maldita.es: Contexto",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1081,
+    "title": "El Gobierno publicó el 31 de julio de 2026 en el BOE un proyecto de re",
+    "text": "El Gobierno publicó el 31 de julio de 2026 en el BOE un proyecto de real decreto para imponer certificados de vacunación obligatorios a todos los viajeros, coincidiendo con la crisis de Ceuta",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1082,
+    "title": "El Foro Económico Mundial propone introducir vacunas en el agua potabl",
+    "text": "El Foro Económico Mundial propone introducir vacunas en el agua potable para vacunar a la población sin su consentimiento",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1083,
+    "title": "A los niños se les administra una cantidad de vacuna comparable con un",
+    "text": "A los niños se les administra una cantidad de vacuna comparable con una botella de refresco.",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falsa",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1084,
+    "title": "Una publicación del BOE del 31 de julio de 2026 hará la vacunación obl",
+    "text": "Una publicación del BOE del 31 de julio de 2026 hará la vacunación obligatoria para viajar si no recibe alegaciones en contra",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1085,
+    "title": "La OMS no ha declarado que la vacuna contra el COVID-19 causa escleros",
+    "text": "La OMS no ha declarado que la vacuna contra el COVID-19 causa esclerosis múltiple",
+    "expected_classification": "Falsa",
+    "validation_source": "Ecuador Chequea: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1086,
+    "title": "Las vacunas contra la COVID-19 provocaron una tasa de aborto espontáne",
+    "text": "Las vacunas contra la COVID-19 provocaron una tasa de aborto espontáneo del 82% entre las mujeres vacunadas durante el primer o segundo trimestre.",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1087,
+    "title": "Las vacunas infantiles o la vacuna MMR causan autismo.",
+    "text": "Las vacunas infantiles o la vacuna MMR causan autismo.",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1088,
+    "title": "Separar la vacuna MMR o espaciar más las vacunas hace que sean más seg",
+    "text": "Separar la vacuna MMR o espaciar más las vacunas hace que sean más seguras.",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Sin evidencia",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1089,
+    "title": "Diferentes aerolíneas están prohibiendo volar a sus pilotos vacunados ",
+    "text": "Diferentes aerolíneas están prohibiendo volar a sus pilotos vacunados después de que algunos fallecieran al pilotar a causa de sus vacunas.",
+    "expected_classification": "Falsa",
+    "validation_source": "EFE Verifica: Falso.",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1090,
+    "title": "Rusia anunció vacuna contra el cáncer y será gratis para el mundo",
+    "text": "Rusia anunció vacuna contra el cáncer y será gratis para el mundo",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1091,
+    "title": "Pfizer publicó en 2025 una lista con los nuevos efectos secundarios de",
+    "text": "Pfizer publicó en 2025 una lista con los nuevos efectos secundarios de su vacuna contra la covid-19.",
+    "expected_classification": "Falsa",
+    "validation_source": "EFE Verifica: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1092,
+    "title": "Bill Gates ha dicho que morirán más de 700.000 personas por la vacuna ",
+    "text": "Bill Gates ha dicho que morirán más de 700.000 personas por la vacuna del coronavirus",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1093,
+    "title": "Bill Gates financió y liberó garrapatas modificadas genéticamente para",
+    "text": "Bill Gates financió y liberó garrapatas modificadas genéticamente para provocar alergias a la carne roja, obligar a la población a dejar de consumir carne convencional y beneficiar así a la industria de la carne artificial y las vacunas.",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1094,
+    "title": "La patente de la vacuna contra el recién inventado hantavirus lo tiene",
+    "text": "La patente de la vacuna contra el recién inventado hantavirus lo tiene una empresa que se llama Curevac, y mirad qué subidón han tenido sus acciones en las últimas dos semanas.",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1095,
+    "title": "El hantavirus es un efecto secundario de la vacuna de Pfizer",
+    "text": "El hantavirus es un efecto secundario de la vacuna de Pfizer",
+    "expected_classification": "Falsa",
+    "validation_source": "ColombiaCheck: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1096,
+    "title": "El \"hantavirus\" se incluye como efecto secundario de las vacunas COVID",
+    "text": "El \"hantavirus\" se incluye como efecto secundario de las vacunas COVID",
+    "expected_classification": "Falsa",
+    "validation_source": "Verificat: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1097,
+    "title": "La vacuna contra el hantavirus ya existía, por lo que se trata de otra",
+    "text": "La vacuna contra el hantavirus ya existía, por lo que se trata de otra plandemia",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1098,
+    "title": "La vacuna contra la COVID-19 es la causa de la infección por hantaviru",
+    "text": "La vacuna contra la COVID-19 es la causa de la infección por hantavirus, según un documento de Pfizer",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1099,
+    "title": "El hantavirus figura en el listado de efectos secundarios de la vacuna",
+    "text": "El hantavirus figura en el listado de efectos secundarios de la vacuna de Pfizer contra la covid-19.",
+    "expected_classification": "Falsa",
+    "validation_source": "EFE Verifica: Falso.",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1100,
+    "title": "La patente de la vacuna contra el “inventado” hantavirus lo tiene una ",
+    "text": "La patente de la vacuna contra el “inventado” hantavirus lo tiene una empresa llamada Curevac; sus acciones han subido durante dos semanas",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1101,
+    "title": "Es falso que Pfizer desarrolló una vacuna contra el hantavirus y que e",
+    "text": "Es falso que Pfizer desarrolló una vacuna contra el hantavirus y que est...",
+    "expected_classification": "Falsa",
+    "validation_source": "Animal Político: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1102,
+    "title": "Pfizer presenta resultados prometedores de su nueva vacuna ARNm contra",
+    "text": "Pfizer presenta resultados prometedores de su nueva vacuna ARNm contra el hantavirus.",
+    "expected_classification": "Falsa",
+    "validation_source": "Newtral: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1103,
+    "title": "Pfizer presentó una vacuna para el Hantavirus coincidiendo con la apar",
+    "text": "Pfizer presentó una vacuna para el Hantavirus coincidiendo con la aparición de la enfermedad en un crucero",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1104,
+    "title": "Es falso que una vacuna rusa contra el cáncer será gratuita para todo ",
+    "text": "Es falso que una vacuna rusa contra el cáncer será gratuita para todo el...",
+    "expected_classification": "Falsa",
+    "validation_source": "Animal Político: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1105,
+    "title": "Rusia ha desarrollado una vacuna contra el cáncer que será gratuita pa",
+    "text": "Rusia ha desarrollado una vacuna contra el cáncer que será gratuita para todo el mundo.",
+    "expected_classification": "Falsa",
+    "validation_source": "EFE Verifica: Falso.",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1106,
+    "title": "Las vacunas por COVID-19 provocaron \"turbocáncer\" en pacientes.",
+    "text": "Las vacunas por COVID-19 provocaron \"turbocáncer\" en pacientes.",
+    "expected_classification": "Falsa",
+    "validation_source": "Animal Político: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1107,
+    "title": "La afirmación de que \"las vacunas no causan autismo\" no está basada en",
+    "text": "La afirmación de que \"las vacunas no causan autismo\" no está basada en evidencia, ya que los estudios no han descartado la posibilidad de que las vacunas infantiles causen autismo",
+    "expected_classification": "Falsa",
+    "validation_source": "Factico: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1108,
+    "title": "Edgar Pozo dice que todo aquel que recibió la vacuna contra el covid l",
+    "text": "Edgar Pozo dice que todo aquel que recibió la vacuna contra el covid le amenaza un peligro mortal",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1109,
+    "title": "La vacuna contra el cáncer de Rusia llegará en México y se fabricará a",
+    "text": "La vacuna contra el cáncer de Rusia llegará en México y se fabricará ahí",
+    "expected_classification": "Falsa",
+    "validation_source": "Animal Político: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1110,
+    "title": "Hay cero niños amish que sufren de cáncer, diabetes o autismo",
+    "text": "Hay cero niños amish que sufren de cáncer, diabetes o autismo",
+    "expected_classification": "Falsa",
+    "validation_source": "Animal Político: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1111,
+    "title": "Pedro Cavadas advierte de los trombos gomosos, uno de los efectos secu",
+    "text": "Pedro Cavadas advierte de los trombos gomosos, uno de los efectos secundarios de la vacuna del Covid-19 que ha sido silenciados, y anuncia un producto para limpiar los vasos sanguíneos",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1112,
+    "title": "La vacuna contra la fiebre amarilla contiene grafeno.",
+    "text": "La vacuna contra la fiebre amarilla contiene grafeno.",
+    "expected_classification": "Falsa",
+    "validation_source": "ColombiaCheck: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1113,
+    "title": "Estudio comprobó que vacuna contra influenza aumenta riesgo de contrae",
+    "text": "Estudio comprobó que vacuna contra influenza aumenta riesgo de contraerla",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1114,
+    "title": "Canadá admitió que las vacunas de refuerzo contra el covid-19 están vi",
+    "text": "Canadá admitió que las vacunas de refuerzo contra el covid-19 están vinculadas a una alta tasa de mortalidad en comparación con quienes no están vacunados",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1115,
+    "title": "Circula lista falsa sobre los efectos de la vacuna Pfizer",
+    "text": "Circula lista falsa sobre los efectos de la vacuna Pfizer",
+    "expected_classification": "Falsa",
+    "validation_source": "Verificado MX: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1116,
+    "title": "Pfizer publica oficialmente una lista de efectos secundarios de su vac",
+    "text": "Pfizer publica oficialmente una lista de efectos secundarios de su vacuna contra el covid-19",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1117,
+    "title": "El bacilo de Koch remueve el cáncer y su vacuna tiene mercurio",
+    "text": "El bacilo de Koch remueve el cáncer y su vacuna tiene mercurio",
+    "expected_classification": "Falsa",
+    "validation_source": "AFP Factual: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1118,
+    "title": "Científicos argentinos descubren sustancias dañinas no declaradas en l",
+    "text": "Científicos argentinos descubren sustancias dañinas no declaradas en las vacunas contra la COVID-19",
+    "expected_classification": "Falsa",
+    "validation_source": "Maldita.es: Bulo",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1119,
+    "title": "Rusia lanzará en enero una vacuna que cura el cáncer",
+    "text": "Rusia lanzará en enero una vacuna que cura el cáncer",
+    "expected_classification": "Falsa",
+    "validation_source": "ColombiaCheck: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  },
+  {
+    "id": 1120,
+    "title": "¿Rusia tiene lista una vacuna que cura el cáncer de piel? Falso, está ",
+    "text": "¿Rusia tiene lista una vacuna que cura el cáncer de piel? Falso, está e...",
+    "expected_classification": "Falsa",
+    "validation_source": "Animal Político: Falso",
+    "notes": "Afirmación real verificada por un fact-checker.",
+    "split": "real"
+  }
+]
