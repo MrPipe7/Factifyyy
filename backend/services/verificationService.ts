@@ -210,6 +210,13 @@ export interface VerifyOptions {
   llm?: LlmJudge | null;
 }
 
+/** Minimum similarity between the analyzed claim and a fact-checked claim to reuse the fact-checker's verdict. */
+const MIN_REVIEW_SIMILARITY = 0.75;
+
+function hasCloseReviewMatch(result: { claimReviewMatch?: { similarity: number } }): boolean {
+  return Boolean(result.claimReviewMatch && result.claimReviewMatch.similarity >= MIN_REVIEW_SIMILARITY);
+}
+
 export async function verifyText(normalizedText: string, options: VerifyOptions = {}) {
   const localResult = analyzeContent(normalizedText);
   const localAlerts = countAlerts(localResult);
@@ -237,7 +244,8 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
       sourceContradict >= 2 && sourceContradict >= sourceSupport + 1;
     const hasOfficialCoincidences = factCheckResult.claimReviewMatches >= 2;
 
-    const reviewMatch = factCheckResult.claimReviewMatch;
+    // A weakly similar review is often about a different claim on the same topic: require a close match.
+    const reviewMatch = hasCloseReviewMatch(factCheckResult) ? factCheckResult.claimReviewMatch : undefined;
     if (reviewMatch) {
       // A fact-checker already rated an equivalent claim: that verdict is the strongest evidence available.
       const verdictClassification: "confiable" | "dudoso" | "falso" =
@@ -390,9 +398,11 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
   // Any failure (no key, quota, timeout, invalid answer) keeps the rules + sources verdict.
   const judge = options.llm === undefined ? judgeWithGemini : options.llm;
   const hasDebunkStatement = localResult.signals.some((s) => s.label === "Redacción de desmentido explícito");
-  if (judge && factCheckResult && !factCheckResult.claimReviewMatch && !hasDebunkStatement) {
+  if (judge && factCheckResult && !hasCloseReviewMatch(factCheckResult) && !hasDebunkStatement) {
     const verdict = await judge(normalizedText, factCheckResult.sources);
-    if (verdict) {
+    // The LLM is only trusted to flag false claims: it is too cautious with legitimate news
+    // (it marks official announcements as "dudoso"), so otherwise the rules + sources verdict stays.
+    if (verdict && verdict.classification !== "dudoso") {
       enrichedResult = {
         ...enrichedResult,
         classification: verdict.classification,

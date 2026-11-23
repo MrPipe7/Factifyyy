@@ -120,7 +120,7 @@ const MANIPULATION_WORDS = [
 ];
 
 const FAKE_INDICATORS = [
-  "sin fuentes", "anónimo", "sin autor", "fecha desconocida",
+  "sin fuentes", "anónimo", "anónima", "anonim", "fuentes cercanas", "sin autor", "fecha desconocida",
   "no tiene fecha", "sin verificar",
 ];
 
@@ -344,7 +344,12 @@ export function analyzeContent(text: string): AnalysisResult {
 
   const alarmCount = countWordMatches(trimmed, ALARM_WORDS);
   const clickbaitCount = countPatternMatches(trimmed, CLICKBAIT_PATTERNS);
-  const namedSourceCount = countWordMatches(trimmed, NAMED_SOURCES);
+  // "Anonymous/unnamed sources" is the opposite of a recognizable source, so it must not count as one.
+  const withoutAnonymousSources = trimmed.replace(
+    /fuentes?\s+(an[oó]nimas?|cercanas?|no\s+identificadas?|sin\s+identificar)|fuentes?\s+que\s+(prefieren|no\s+quisieron|no\s+quiso)\s+[^.,;]*/gi,
+    " ",
+  );
+  const namedSourceCount = countWordMatches(withoutAnonymousSources, NAMED_SOURCES);
   const vagueAttributionCount = countMatches(trimmed, VAGUE_ATTRIBUTIONS);
   const manipulationCount = countMatches(trimmed, MANIPULATION_WORDS);
   const unverifiedClaimCount = countMatches(trimmed, UNVERIFIED_CLAIM_MARKERS);

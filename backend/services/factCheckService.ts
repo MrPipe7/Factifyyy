@@ -159,10 +159,11 @@ function mapTavilyToSources(payload: TavilyPayload | null | undefined, isDebunkC
   const results = Array.isArray(payload?.results) ? payload.results : [];
   const inferStance = (text: string): "support" | "contradict" | "neutral" => {
     const t = text.toLowerCase();
-    if (/(falso|fake|hoax|desmiente|engaños|misleading|fabricad|ia generado|ai generated)/.test(t)) {
+    // Articles that debunk or warn against a claim mention the same topic, so they must count as contradicting it.
+    if (/(falso|fake|hoax|desmiente|desmentid|engaños|misleading|fabricad|ia generado|ai generated|\bbulo|\bmito\b|myth|debunk|conspirac|baseless|infundad|sin pruebas|no hay pruebas|no hay evidencia|no existe evidencia|sin evidencia|no es cierto|no debe (ser )?(consumid|usad)|es peligros|peligroso|advierte (contra|sobre)|\bno,? (los|las|el|la)\b)/.test(t)) {
       return "contradict";
     }
-    if (/(verificado|confirmado|oficial|evidencia|comunicado oficial|true|accurate|fact check true|correcto)/.test(t)) {
+    if (/(verificado|confirmado|comunicado oficial|true|accurate|fact check true|correcto)/.test(t)) {
       return "support";
     }
     return "neutral";
