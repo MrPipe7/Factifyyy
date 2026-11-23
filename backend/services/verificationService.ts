@@ -1,15 +1,10 @@
 import { analyzeContent } from "../../shared/analyzer.js";
 import type { VerifiedSource } from "../../shared/analyzer.js";
 import { runFactCheck, type FactCheckResult } from "./factCheckService.js";
+import { judgeWithGemini, type LlmJudge } from "./llmVerificationService.js";
 
 function countAlerts(result: ReturnType<typeof analyzeContent>): number {
   return result.signals.filter((s) => s.type === "negative" || s.type === "warning").length;
-}
-
-function classifyByLocalContingency(alerts: number): "confiable" | "dudoso" | "falso" {
-  if (alerts === 0) return "confiable";
-  if (alerts <= 2) return "dudoso";
-  return "falso";
 }
 
 function classifyBySources(
@@ -211,6 +206,15 @@ function buildEvidenceMiniSummary(
 export interface VerifyOptions {
   /** Replaces the external lookup. Return null to skip APIs and use only local rules. */
   factCheck?: (text: string) => Promise<FactCheckResult | null>;
+  /** LLM judge used when no fact-checker rated the claim. Defaults to Gemini; null disables it. */
+  llm?: LlmJudge | null;
+}
+
+/** Minimum similarity between the analyzed claim and a fact-checked claim to reuse the fact-checker's verdict. */
+const MIN_REVIEW_SIMILARITY = 0.75;
+
+function hasCloseReviewMatch(result: { claimReviewMatch?: { similarity: number } }): boolean {
+  return Boolean(result.claimReviewMatch && result.claimReviewMatch.similarity >= MIN_REVIEW_SIMILARITY);
 }
 
 export async function verifyText(normalizedText: string, options: VerifyOptions = {}) {
@@ -240,7 +244,31 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
       sourceContradict >= 2 && sourceContradict >= sourceSupport + 1;
     const hasOfficialCoincidences = factCheckResult.claimReviewMatches >= 2;
 
-    if (hasOfficialCoincidences) {
+    // A weakly similar review is often about a different claim on the same topic: require a close match.
+    const reviewMatch = hasCloseReviewMatch(factCheckResult) ? factCheckResult.claimReviewMatch : undefined;
+    if (reviewMatch) {
+      // A fact-checker already rated an equivalent claim: that verdict is the strongest evidence available.
+      const verdictClassification: "confiable" | "dudoso" | "falso" =
+        reviewMatch.verdict === "falso" ? "falso" : reviewMatch.verdict === "verdadero" ? "confiable" : "dudoso";
+      enrichedResult = {
+        ...localResult,
+        classification: verdictClassification,
+        confidence: verdictClassification === "dudoso" ? 70 : 92,
+        explanation: `${reviewMatch.publisher} (verificador) calificó como «${reviewMatch.rating}» una afirmación equivalente a la analizada. ${buildEvidenceMiniSummary(factCheckResult.sources, verdictClassification, normalizedText)}`.trim(),
+        recommendation: buildSourceBasedRecommendation(verdictClassification),
+        engine: "factcheck",
+        analysisOrigin: "Verificación externa encontrada",
+        preliminaryLocal: false,
+        sources: factCheckResult.sources,
+        sourceStats: {
+          support: sourceSupport,
+          contradict: sourceContradict,
+          neutral: sourceNeutral,
+          irrelevant: 0,
+          total: factCheckResult.sources.length,
+        },
+      };
+    } else if (hasOfficialCoincidences) {
       const baseExplanation =
         "Se detectaron dos o más coincidencias en agencias de verificación (ClaimReview), lo que respalda la credibilidad del contenido.";
       enrichedResult = {
@@ -268,9 +296,8 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
         },
       };
     } else if (!hasExternal) {
-      const contingencyClassification = hasLocalDebunkSignal
-        ? "confiable"
-        : classifyByLocalContingency(localAlerts);
+      // No external evidence: the content analysis decides (it already accounts for debunk statements).
+      const contingencyClassification = localResult.classification;
       enrichedResult = {
         ...localResult,
         classification: contingencyClassification,
@@ -290,14 +317,31 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
         sourceStats: { support: 0, contradict: 0, neutral: 0, irrelevant: 0, total: 0 },
       };
     } else {
-      const effectiveClassification =
-        hasLocalDebunkSignal && !strongExternalContradiction
-          ? "confiable"
-          : sourceDrivenClassification;
+      const localClassification = localResult.classification;
+      let effectiveClassification: "confiable" | "dudoso" | "falso";
+      let resolvedBy: "sources" | "local" | "disagreement" = "sources";
+      if (hasLocalDebunkSignal && !strongExternalContradiction) {
+        effectiveClassification = "confiable";
+      } else if (sourceDrivenClassification === "dudoso") {
+        // External evidence is not conclusive: fall back to the content analysis.
+        effectiveClassification = localClassification;
+        resolvedBy = "local";
+      } else if (
+        // Be prudent: "confiable" needs the content analysis to agree (media search results are noisy).
+        (sourceDrivenClassification === "confiable" && localClassification !== "confiable") ||
+        (sourceDrivenClassification === "falso" && localClassification === "confiable")
+      ) {
+        // Sources and content analysis disagree: do not claim certainty.
+        effectiveClassification = "dudoso";
+        resolvedBy = "disagreement";
+      } else {
+        effectiveClassification = sourceDrivenClassification;
+      }
       const usedDebunkOverride =
         effectiveClassification === "confiable" &&
         sourceDrivenClassification !== "confiable" &&
         hasLocalDebunkSignal;
+      const sourceBalanceLine = `Se encontraron ${factCheckResult.sources.length} fuentes de contraste (${sourceSupport} a favor, ${sourceContradict} en contra y ${sourceNeutral} neutrales).`;
 
       const bySourcesConfidence = confidenceByExternalSources(
         sourceSupport,
@@ -306,8 +350,12 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
         localAlerts,
       );
 
-      const baseExplanation = usedDebunkOverride
-        ? `Se encontraron ${factCheckResult.sources.length} fuentes de contraste (${sourceSupport} a favor, ${sourceContradict} en contra y ${sourceNeutral} neutrales). Como el texto es un desmentido explícito y no hubo contradicción externa dominante, se clasifica como confiable.`
+      const baseExplanation = resolvedBy === "local"
+        ? `${sourceBalanceLine} La evidencia externa no fue concluyente, por lo que el veredicto se apoya en el análisis del contenido. ${localResult.explanation}`
+        : resolvedBy === "disagreement"
+        ? `${sourceBalanceLine} Las fuentes externas y el análisis del contenido no coinciden, por lo que no es posible confirmar ni descartar la afirmación con seguridad.`
+        : usedDebunkOverride
+        ? `${sourceBalanceLine} Como el texto es un desmentido explícito y no hubo contradicción externa dominante, se clasifica como confiable.`
         : buildSourceBasedExplanation(
             effectiveClassification,
             sourceSupport,
@@ -325,8 +373,12 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
           effectiveClassification === "confiable" && hasLocalDebunkSignal
             ? Math.max(74, bySourcesConfidence)
             : bySourcesConfidence,
-        explanation: `${baseExplanation} ${buildEvidenceMiniSummary(factCheckResult.sources, effectiveClassification, normalizedText)}`.trim(),
-        recommendation: buildSourceBasedRecommendation(effectiveClassification),
+        explanation:
+          resolvedBy === "sources"
+            ? `${baseExplanation} ${buildEvidenceMiniSummary(factCheckResult.sources, effectiveClassification, normalizedText)}`.trim()
+            : baseExplanation,
+        recommendation:
+          resolvedBy === "local" ? localResult.recommendation : buildSourceBasedRecommendation(effectiveClassification),
         engine: "factcheck",
         analysisOrigin: "Análisis textual + verificación externa",
         preliminaryLocal: false,
@@ -338,6 +390,27 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
           irrelevant: 0,
           total: factCheckResult.sources.length,
         },
+      };
+    }
+  }
+
+  // When no fact-checker rated the claim, an LLM weighs the claim against the sources found.
+  // Any failure (no key, quota, timeout, invalid answer) keeps the rules + sources verdict.
+  const judge = options.llm === undefined ? judgeWithGemini : options.llm;
+  const hasDebunkStatement = localResult.signals.some((s) => s.label === "Redacción de desmentido explícito");
+  if (judge && factCheckResult && !hasCloseReviewMatch(factCheckResult) && !hasDebunkStatement) {
+    const verdict = await judge(normalizedText, factCheckResult.sources);
+    // The LLM is only trusted to flag false claims: it is too cautious with legitimate news
+    // (it marks official announcements as "dudoso"), so otherwise the rules + sources verdict stays.
+    if (verdict && verdict.classification !== "dudoso") {
+      enrichedResult = {
+        ...enrichedResult,
+        classification: verdict.classification,
+        explanation: verdict.reason || enrichedResult.explanation,
+        recommendation: buildSourceBasedRecommendation(verdict.classification),
+        engine: "factcheck",
+        analysisOrigin: "Análisis con IA + verificación externa",
+        preliminaryLocal: false,
       };
     }
   }

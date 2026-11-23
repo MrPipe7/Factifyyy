@@ -10,6 +10,7 @@ export type VerificationEngine = "local" | "factcheck";
 export type AnalysisOrigin =
   | "Análisis textual local"
   | "Análisis textual + verificación externa"
+  | "Análisis con IA + verificación externa"
   | "Verificación externa encontrada"
   | "Sin verificación externa disponible";
 
@@ -68,12 +69,12 @@ export interface Signal {
   description: string;
 }
 
+// Palabras alarmistas. Se comparan sin acentos ni mayúsculas y como palabra completa
+// (p. ej. "puntos de atención" ya no cuenta como alarma).
 const ALARM_WORDS = [
-  "urgente", "exclusivo", "impactante", "increíble", "increible",
-  "sorprendente", "revelado", "secreto", "oculto", "censurado",
-  "prohibido", "te lo ocultan", "no quieren que sepas", "comparte antes",
-  "antes de que lo borren", "viral", "confirmado", "URGENTE", "EXCLUSIVO",
-  "IMPACTANTE", "ALERTA", "atención", "cuidado", "peligro",
+  "urgente", "exclusivo", "impactante", "increíble", "sorprendente", "revelado",
+  "secreto", "oculto", "censurado", "prohibido", "te lo ocultan", "no quieren que sepas",
+  "comparte antes", "antes de que lo borren", "viral", "alerta", "peligro",
 ];
 
 const CLICKBAIT_PATTERNS = [
@@ -119,7 +120,7 @@ const MANIPULATION_WORDS = [
 ];
 
 const FAKE_INDICATORS = [
-  "sin fuentes", "anónimo", "sin autor", "fecha desconocida",
+  "sin fuentes", "anónimo", "anónima", "anonim", "fuentes cercanas", "sin autor", "fecha desconocida",
   "no tiene fecha", "sin verificar",
 ];
 
@@ -239,23 +240,50 @@ export function isManifestlyFalseClaim(text: string): boolean {
     "apagar el wifi durante diez minutos", "palabra secreta en cualquier cajero",
     "dinero gratis sin afectar ninguna cuenta",
   ];
-  return patterns.some((p) => norm.includes(normalizeText(p)));
+  if (patterns.some((p) => norm.includes(normalizeText(p)))) return true;
+  return STRONG_FALSE_PATTERNS.some((re) => re.test(norm));
 }
+
+/**
+ * Patrones generales de desinformación evidente (texto ya normalizado: sin acentos, minúsculas).
+ * Se agrupan por tipo de bulo y no por noticia concreta.
+ */
+const STRONG_FALSE_PATTERNS: RegExp[] = [
+  // Estafas / phishing
+  /\b(ganaste|has ganado|fuiste seleccionad[oa]|eres (el )?ganador)\b.{0,60}\b(premio|auto|loteria|dinero|sorteo|casa)\b/,
+  /\b(envia|entrega|ingresa|escribe|proporciona)\b.{0,50}\b(clave|contrasena|password|datos bancarios|tarjeta|cuenta bancaria|cedula)\b/,
+  /\b(tu|su) cuenta (bancaria )?(sera|va a ser) (eliminada|bloqueada|suspendida|cerrada)\b/,
+  /\b(si )?(compartes|reenvias|envias)\b.{0,40}\b(contactos|amigos|grupos)\b.{0,60}\b(gana|recib|regal|obten|elimin)/,
+  // Conspiración / control
+  /\b(controlan?|controlar|dominar|manipular)\b.{0,30}\b(mente|pensamientos|poblacion|personas|ciudadanos)\b/,
+  /\b(gobiernos?|nasa|elites?|farmaceuticas?|medicos)\b.{0,40}\b(ocultan?|esconden?|callan?|silencian?|lo saben)\b/,
+  /\bvacunas?\b.{0,40}\b(microchips?|chips?|rastrear|rastreo)\b/,
+  /\bquimico (secreto )?para (dominar|controlar|volver)/,
+  /\btierra (es )?plana\b/,
+  // Remedios milagrosos / salud
+  /\b(beber|tomar|ingerir)\s+(lejia|cloro)\b/,
+  /\bcura(r|n)?\b.{0,25}\b(cancer|cualquier (infeccion|enfermedad|virus)|todas las enfermedades)\b/,
+  // Catástrofes imposibles
+  /\b(el sol|la tierra)\b.{0,30}\b(se apagara|dejara de (brillar|girar))\b/,
+];
+
+/** Instituciones y organismos reconocibles (texto normalizado). */
+const INSTITUTION_PATTERN =
+  /\b(ministerio|municipalidad|municipio|cancilleria|superintendencia|tribunal|servicio (de|nacional|meteorologico|sismologico)|instituto|universidad|hospital|banco central|organizacion mundial|naciones unidas|agencia|aeropuerto|biblioteca nacional|federacion|comision|autoridad|centro sismologico|empresa (distribuidora|publica)|revista cientifica|policia)\b/;
+
+/** Marcas de información verificable: documento, comunicado, datos o publicación formal. */
+const VERIFIABLE_DETAIL_PATTERN =
+  /\b(comunicado|informe|boletin|resolucion|aviso oficial|aviso|documento|sitio (web|institucional)|portal|plataforma|agenda|bases|reporte|parte oficial|estudio|articulo|metodologia|cifras|datos|calendario|decreto|revision por pares|revisados? por pares)\b/;
 
 /** Comunicados institucionales neutros con datos concretos (sin sensacionalismo). */
 export function isInstitutionalConfiableStyle(text: string): boolean {
   const norm = normalizeText(repairUtf8Mojibake(text));
-  const markers = [
-    "ministerio de salud", "banco central", "municipalidad informo", "hospital regional",
-    "servicio meteorologico", "instituto nacional de estadisticas", "autoridad sanitaria",
-    "empresa distribuidora", "sitio institucional", "informe mensual", "comunicado incluye",
-    "revisados por pares", "universidad acreditada", "canales oficiales", "decreto correspondiente",
-    "articulo cientifico", "no demuestra causalidad", "investigaciones adicionales",
-  ];
-  const hasMarker = markers.some((m) => norm.includes(normalizeText(m)));
-  const hasAlarm = ALARM_WORDS.some((w) => norm.includes(normalizeText(w)));
+  const hasInstitution = INSTITUTION_PATTERN.test(norm);
+  const hasDetail = VERIFIABLE_DETAIL_PATTERN.test(norm);
+  const hasAlarm = countWordMatches(norm, ALARM_WORDS) > 0;
   const hasManipulation = MANIPULATION_WORDS.some((w) => norm.includes(normalizeText(w)));
-  return hasMarker && !hasAlarm && !hasManipulation;
+  const hasUnverified = UNVERIFIED_CLAIM_MARKERS.some((w) => norm.includes(normalizeText(w)));
+  return hasInstitution && hasDetail && !hasAlarm && !hasManipulation && !hasUnverified;
 }
 
 export function analyzeContent(text: string): AnalysisResult {
@@ -314,9 +342,14 @@ export function analyzeContent(text: string): AnalysisResult {
     };
   }
 
-  const alarmCount = countMatches(trimmed, ALARM_WORDS);
+  const alarmCount = countWordMatches(trimmed, ALARM_WORDS);
   const clickbaitCount = countPatternMatches(trimmed, CLICKBAIT_PATTERNS);
-  const namedSourceCount = countWordMatches(trimmed, NAMED_SOURCES);
+  // "Anonymous/unnamed sources" is the opposite of a recognizable source, so it must not count as one.
+  const withoutAnonymousSources = trimmed.replace(
+    /fuentes?\s+(an[oó]nimas?|cercanas?|no\s+identificadas?|sin\s+identificar)|fuentes?\s+que\s+(prefieren|no\s+quisieron|no\s+quiso)\s+[^.,;]*/gi,
+    " ",
+  );
+  const namedSourceCount = countWordMatches(withoutAnonymousSources, NAMED_SOURCES);
   const vagueAttributionCount = countMatches(trimmed, VAGUE_ATTRIBUTIONS);
   const manipulationCount = countMatches(trimmed, MANIPULATION_WORDS);
   const unverifiedClaimCount = countMatches(trimmed, UNVERIFIED_CLAIM_MARKERS);

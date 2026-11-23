@@ -54,6 +54,38 @@ create policy "allow_anon_insert_user_feedback"
   to anon, authenticated
   with check (true);
 
+-- HU16: cache of LLM (Gemini) verdicts so repeated claims do not spend free-tier quota.
+create table if not exists public.llm_cache (
+  cache_key text primary key,
+  created_at timestamptz not null default now(),
+  classification text not null check (classification in ('confiable', 'dudoso', 'falso')),
+  reason text not null default ''
+);
+
+alter table public.llm_cache enable row level security;
+
+drop policy if exists "allow_anon_select_llm_cache" on public.llm_cache;
+create policy "allow_anon_select_llm_cache"
+  on public.llm_cache
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "allow_anon_insert_llm_cache" on public.llm_cache;
+create policy "allow_anon_insert_llm_cache"
+  on public.llm_cache
+  for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "allow_anon_update_llm_cache" on public.llm_cache;
+create policy "allow_anon_update_llm_cache"
+  on public.llm_cache
+  for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
 -- Migration safeguard for existing projects:
 -- If confidence was created in previous versions, remove it.
 alter table if exists public.verifications_log
