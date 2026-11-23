@@ -3,6 +3,9 @@ import { validateVerifyBody } from "../shared/validateInput.js";
 import { getSupabaseClient } from "./_lib/supabase.js";
 import { getErrorMessage, methodNotAllowed, readJsonBody, sendJson, type ApiRequest, type ApiResponse } from "./_lib/http.js";
 import { verifyText } from "../backend/services/verificationService.js";
+import { judgeWithGemini } from "../backend/services/llmVerificationService.js";
+import { withLlmCache } from "../backend/services/llmCache.js";
+import { createSupabaseLlmCacheStore } from "./_lib/llmCacheStore.js";
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
@@ -20,7 +23,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     const normalizedText = normalizeAnalysisText(validated.text);
-    const { result: enrichedResult, providers } = await verifyText(normalizedText);
+    // Repeated claims reuse the stored Gemini verdict instead of spending free-tier quota.
+    const cacheStore = createSupabaseLlmCacheStore();
+    const llm = cacheStore ? withLlmCache(judgeWithGemini, cacheStore) : undefined;
+    const { result: enrichedResult, providers } = await verifyText(normalizedText, { llm });
 
     const responsePayload = {
       ...enrichedResult,
