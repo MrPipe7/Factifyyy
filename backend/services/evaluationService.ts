@@ -1,13 +1,13 @@
-import { createHash } from "node:crypto";
+﻿import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { runFactCheck, type FactCheckResult } from "./factCheckService.js";
 import { verifyText } from "./verificationService.js";
-import { judgeWithGemini, type LlmJudge, type LlmVerdict } from "./llmVerificationService.js";
+import { judgeWithGemini, PROMPT_VERSION, setLlmMinInterval, type LlmJudge, type LlmVerdict } from "./llmVerificationService.js";
 
 /** dev/test/all: synthetic dataset. real: real claims verified by fact-checkers. */
-export type EvaluationSplit = "dev" | "test" | "all" | "real";
+export type EvaluationSplit = "dev" | "test" | "all" | "real" | "holdout" | "final";
 /** local: rules only. full: external APIs + local fallback. llm: full + LLM judge (needs GEMINI_API_KEY). */
 export type EvaluationMode = "local" | "full" | "llm";
 export type ClassLabel = "Confiable" | "Dudosa" | "Falsa";
@@ -70,6 +70,8 @@ const CLASSES: ClassLabel[] = ["Confiable", "Dudosa", "Falsa"];
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DATASET_PATH = path.join(here, "../../data/evaluation_dataset.json");
 const REAL_DATASET_PATH = path.join(here, "../../data/evaluation_real.json");
+const HOLDOUT_DATASET_PATH = path.join(here, "../../data/evaluation_holdout.json");
+const FINAL_DATASET_PATH = path.join(here, "../../data/evaluation_final.json");
 
 function toLabel(value: string): ClassLabel {
   const lower = value.toLowerCase();
@@ -104,7 +106,7 @@ function createCachedFactCheck(cacheDir: string | null) {
 function createCachedLlmJudge(cacheDir: string | null): LlmJudge {
   return async (claim, sources) => {
     const file = cacheDir
-      ? path.join(cacheDir, "llm", `${createHash("sha1").update(claim).digest("hex")}.json`)
+      ? path.join(cacheDir, `llm-${PROMPT_VERSION}`, `${createHash("sha1").update(claim).digest("hex")}.json`)
       : null;
     if (file) {
       try {
@@ -144,12 +146,13 @@ export async function runEvaluationReport(options: EvaluationOptions = {}): Prom
   const mode = options.mode ?? "local";
   const cacheDir = options.cacheDir === undefined ? path.join(process.cwd(), ".cache", "evaluation") : options.cacheDir;
 
-  const dataPath = split === "real" ? REAL_DATASET_PATH : DATASET_PATH;
+  const dataPath = split === "real" ? REAL_DATASET_PATH : split === "holdout" ? HOLDOUT_DATASET_PATH : split === "final" ? FINAL_DATASET_PATH : DATASET_PATH;
   const all = JSON.parse(await fs.readFile(dataPath, "utf-8")) as DatasetCase[];
-  const cases = split === "all" || split === "real" ? all : all.filter((c) => c.split === split);
+  const cases = split === "all" || split === "real" || split === "holdout" || split === "final" ? all : all.filter((c) => c.split === split);
 
   const factCheck = mode === "local" ? async () => null : createCachedFactCheck(cacheDir);
   const llm = mode === "llm" ? createCachedLlmJudge(cacheDir) : null;
+  if (mode === "llm") setLlmMinInterval(4000); // free tier: 15 requests per minute
 
   const usedProviders = new Set<string>();
   const results = await mapWithConcurrency(cases, options.concurrency ?? 4, async (c): Promise<EvaluationCaseResult> => {
