@@ -91,6 +91,13 @@ export function HomePage({ onResult }: HomePageProps) {
           return;
         }
 
+        if (code === "NO_TRANSCRIPT") {
+          setLoading(false);
+          setError("Este video no tiene subtítulos disponibles, así que no pudimos transcribirlo. Pega el texto manualmente.");
+          setIngestMode("text");
+          return;
+        }
+
         if (code === "PAGE_NOT_FOUND") {
           setLoading(false);
           setError("No encontramos la página (404). Intenta otro enlace o pega el texto manualmente.");
@@ -111,8 +118,15 @@ export function HomePage({ onResult }: HomePageProps) {
       const textForAnalysis = typeof extracted?.textForAnalysis === "string" ? extracted.textForAnalysis : "";
       if (!textForAnalysis) throw new Error("No se pudo extraer contenido para analizar.");
 
-      setNotice("Contenido extraído automáticamente desde la URL. Analizando credibilidad...");
-      const result = await verifyContent(textForAnalysis, "url");
+      const isVideo = extracted?.inputKind === "video";
+      setNotice(
+        !isVideo
+          ? "Contenido extraído automáticamente desde la URL. Analizando credibilidad..."
+          : extracted?.transcriptSource === "title"
+            ? "El video no tiene subtítulos: analizaremos solo su título, así que el resultado es menos fiable."
+            : "Transcribimos los subtítulos del video. Analizando credibilidad...",
+      );
+      const result = await verifyContent(textForAnalysis, isVideo ? "video" : "url");
       setLoading(false);
       onResult(result);
     } catch {
@@ -170,7 +184,7 @@ export function HomePage({ onResult }: HomePageProps) {
                   onClick={() => handleModeChange("url")}
                   className={`px-3 py-1.5 rounded-md text-sm ${ingestMode === "url" ? "bg-blue-600 text-white" : "text-gray-500 dark:text-gray-300"}`}
                 >
-                  Enlace web
+                  Enlace o video
                 </button>
               </div>
 
@@ -192,7 +206,7 @@ export function HomePage({ onResult }: HomePageProps) {
                     if (error) setError("");
                     if (notice) setNotice("");
                   }}
-                  placeholder="Pega aquí el enlace de la noticia"
+                  placeholder="Pega aquí el enlace de la noticia o de un video de YouTube / Short"
                   className="field"
                 />
               )}
@@ -213,7 +227,7 @@ export function HomePage({ onResult }: HomePageProps) {
                 <p className="text-gray-400 dark:text-gray-500" style={{ fontSize: "0.8rem", lineHeight: 1.5 }}>
                   {ingestMode === "text"
                     ? "Revisamos señales del texto para darte una clasificación simple y fácil de entender."
-                    : "Intentamos leer el contenido del enlace para analizarlo automáticamente."}
+                    : "Leemos el contenido del enlace. En videos de YouTube y Shorts usamos sus subtítulos, por lo que solo funciona si el video los tiene."}
                 </p>
                 <button onClick={ingestMode === "text" ? handleAnalyze : handleAnalyzeUrl} disabled={loading} className="btn-primary flex-shrink-0">
                   {loading ? (
@@ -224,7 +238,7 @@ export function HomePage({ onResult }: HomePageProps) {
                   ) : (
                     <>
                       <Search className="w-4 h-4" />
-                      {ingestMode === "text" ? "Analizar noticia" : "Extraer y analizar URL"}
+                      {ingestMode === "text" ? "Analizar noticia" : "Extraer y analizar"}
                     </>
                   )}
                 </button>

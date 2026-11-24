@@ -1,14 +1,42 @@
+import { getYoutubeTranscript, parseYoutubeVideoId } from "./youtubeTranscriptService.js";
+
 export interface AnalyzeUrlResult {
   url: string;
   title: string;
   body: string;
   textForAnalysis: string;
+  /** "video" when the text is the transcript of a YouTube video or Short. */
+  inputKind?: "url" | "video";
+  /** For videos: "captions" (real transcript) or "title" (no subtitles, only the title was analyzed). */
+  transcriptSource?: "captions" | "title";
 }
 
 export interface AnalyzeUrlError {
   status: number;
   error: string;
-  code: "SCRAPING_BLOCKED" | "PAGE_NOT_FOUND" | "UPSTREAM_ERROR" | "INSUFFICIENT_CONTENT" | "INVALID_URL";
+  code:
+    | "SCRAPING_BLOCKED"
+    | "PAGE_NOT_FOUND"
+    | "UPSTREAM_ERROR"
+    | "INSUFFICIENT_CONTENT"
+    | "INVALID_URL"
+    | "NO_TRANSCRIPT";
+}
+
+async function analyzeYoutube(url: string): Promise<AnalyzeUrlResult | AnalyzeUrlError> {
+  const video = await getYoutubeTranscript(url);
+  if ("code" in video) return video;
+  const textForAnalysis = trimForAnalysis(
+    video.source === "captions" && video.title ? `${video.title}. ${video.transcript}` : video.transcript,
+  );
+  return {
+    url,
+    title: video.title,
+    body: video.transcript,
+    textForAnalysis,
+    inputKind: "video",
+    transcriptSource: video.source,
+  };
 }
 
 function isHttpsUrl(value: string): boolean {
@@ -86,6 +114,9 @@ export async function analyzeUrl(url: string): Promise<AnalyzeUrlResult | Analyz
   if (!rawUrl || !isHttpsUrl(rawUrl)) {
     return { status: 400, error: "La URL debe ser HTTPS válida.", code: "INVALID_URL" };
   }
+
+  // YouTube pages are not scrapeable articles: read the video's subtitles instead.
+  if (parseYoutubeVideoId(rawUrl)) return analyzeYoutube(rawUrl);
 
   const response = await fetch(rawUrl, {
     method: "GET",
