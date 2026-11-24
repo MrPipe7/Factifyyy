@@ -4,7 +4,7 @@ import { analyzeContent, type AnalysisResult } from "./analyzer";
  * Prioriza verificación serverless (/api/verify) y usa fallback local
  * cuando el backend no está disponible.
  */
-export async function verifyContent(text: string, kind: "text" | "url" = "text"): Promise<AnalysisResult> {
+export async function verifyContent(text: string, kind: "text" | "url" | "video" = "text"): Promise<AnalysisResult> {
   try {
     const response = await fetch("/api/verify", {
       method: "POST",
