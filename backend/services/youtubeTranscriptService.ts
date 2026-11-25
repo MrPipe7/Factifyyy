@@ -78,21 +78,53 @@ function cleanTranscript(text: string): string {
     .trim();
 }
 
-async function fetchPlayer(videoId: string): Promise<PlayerResponse | null> {
+interface InnertubeClient {
+  name: string;
+  version: string;
+  userAgent: string;
+  embed?: boolean;
+}
+
+const CLIENTS: InnertubeClient[] = [
+  { name: "ANDROID", version: CLIENT_VERSION, userAgent: `com.google.android.youtube/${CLIENT_VERSION} (Linux; U; Android 14)` },
+  { name: "TVHTML5_SIMPLY_EMBEDDED_PLAYER", version: "2.0", userAgent: "Mozilla/5.0 (SMART-TV; Linux; Tizen 6.5) AppleWebKit/537.36 (KHTML, like Gecko) 85.0.4183.93/6.5 TV Safari/537.36", embed: true },
+  { name: "IOS", version: "20.10.4", userAgent: "com.google.ios.youtube/20.10.4 (iPhone16,2; U; CPU iOS 18_3_2 like Mac OS X;)" },
+  { name: "MWEB", version: "2.20250311.03.00", userAgent: "Mozilla/5.0 (iPad; CPU OS 16_7_10 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1" },
+];
+
+async function fetchPlayerWith(client: InnertubeClient, videoId: string): Promise<PlayerResponse | null> {
   const response = await fetch(INNERTUBE_URL, {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "user-agent": `com.google.android.youtube/${CLIENT_VERSION} (Linux; U; Android 14)`,
-    },
+    headers: { "content-type": "application/json", "user-agent": client.userAgent },
     body: JSON.stringify({
-      context: { client: { clientName: "ANDROID", clientVersion: CLIENT_VERSION, hl: "es" } },
+      context: {
+        client: { clientName: client.name, clientVersion: client.version, hl: "es" },
+        ...(client.embed ? { thirdParty: { embedUrl: "https://www.google.com" } } : {}),
+      },
       videoId,
+      contentCheckOk: true,
+      racyCheckOk: true,
     }),
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   if (!response.ok) return null;
   return (await response.json()) as PlayerResponse;
+}
+
+const hasTracks = (p: PlayerResponse | null): boolean =>
+  Boolean(p?.captions?.playerCaptionsTracklistRenderer?.captionTracks?.some((t) => t.baseUrl));
+
+async function fetchPlayer(videoId: string): Promise<PlayerResponse | null> {
+  let fallback: PlayerResponse | null = null;
+  for (const client of CLIENTS) {
+    try {
+      const player = await fetchPlayerWith(client, videoId);
+      if (hasTracks(player)) return player;
+      if (!fallback && player?.videoDetails?.title) fallback = player;
+    } catch {
+    }
+  }
+  return fallback;
 }
 
 async function fetchCaptionText(track: CaptionTrack): Promise<string> {
