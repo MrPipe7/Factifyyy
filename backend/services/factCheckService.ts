@@ -288,17 +288,13 @@ export async function runFactCheck(text: string): Promise<FactCheckResult> {
       : [];
   const mergedTavilyRaw = [...tavilySourcesRaw, ...tavilyRelaxed];
 
-  const googleSources = googleResult.sources.filter((s) => {
+  const minHits = Math.min(terms.length, Math.max(2, Math.ceil(terms.length * 0.3)));
+  const isRelevant = (s: VerifiedSource) => {
     const combined = `${s.title} ${s.snippet ?? ""} ${s.publisher ?? ""}`;
-    return relevanceScore(combined, terms) >= 1;
-  });
-  let tavilySources = mergedTavilyRaw.filter((s) => {
-    const combined = `${s.title} ${s.snippet ?? ""} ${s.publisher ?? ""}`;
-    return relevanceScore(combined, terms) >= 1;
-  });
-  if (tavilySources.length === 0) {
-    tavilySources = mergedTavilyRaw.slice(0, 3);
-  }
+    return relevanceScore(combined, terms) >= minHits;
+  };
+  const googleSources = googleResult.sources.filter(isRelevant);
+  const tavilySources = mergedTavilyRaw.filter(isRelevant);
 
   if (googleKey) providers.push("google_fact_check");
   if (tavilyKey) providers.push("tavily");
