@@ -96,13 +96,13 @@ function extractArticleBody(html: string): string {
 
 function looksBlocked(html: string): boolean {
   const lowered = html.toLowerCase();
-  return (
-    lowered.includes("captcha") ||
-    lowered.includes("access denied") ||
-    lowered.includes("cloudflare") ||
-    lowered.includes("bot detection") ||
-    lowered.includes("request blocked")
-  );
+  const title = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(lowered)?.[1] ?? "";
+  if (/(just a moment|attention required|access denied|request blocked|are you a robot|verifying you are human)/.test(title)) {
+    return true;
+  }
+  // Pages that merely load a captcha/cloudflare script are normal; a block page is short and has no article text.
+  const hasArticleText = (lowered.match(/<p\b/g) ?? []).length >= 3;
+  return !hasArticleText && /(captcha|cloudflare|bot detection|request blocked)/.test(lowered);
 }
 
 function trimForAnalysis(text: string): string {
@@ -118,14 +118,26 @@ export async function analyzeUrl(url: string): Promise<AnalyzeUrlResult | Analyz
   // YouTube pages are not scrapeable articles: read the video's subtitles instead.
   if (parseYoutubeVideoId(rawUrl)) return analyzeYoutube(rawUrl);
 
-  const response = await fetch(rawUrl, {
-    method: "GET",
-    redirect: "follow",
-    headers: {
-      "user-agent": "FactifyBot/1.0 (+https://factify.app)",
-      accept: "text/html,application/xhtml+xml",
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(rawUrl, {
+      method: "GET",
+      redirect: "follow",
+      headers: {
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "accept-language": "es-CL,es;q=0.9,en;q=0.8",
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch {
+    return {
+      status: 502,
+      error: "No se pudo abrir el enlace (sin respuesta del sitio). Pega el texto manualmente.",
+      code: "UPSTREAM_ERROR",
+    };
+  }
 
   if (response.status === 403) {
     return { status: 403, error: "El sitio bloqueó la extracción automática (403).", code: "SCRAPING_BLOCKED" };
