@@ -397,8 +397,7 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
   // When no fact-checker rated the claim, an LLM weighs the claim against the sources found.
   // Any failure (no key, quota, timeout, invalid answer) keeps the rules + sources verdict.
   const judge = options.llm === undefined ? judgeWithGemini : options.llm;
-  const hasDebunkStatement = localResult.signals.some((s) => s.label === "Redacción de desmentido explícito");
-  if (judge && factCheckResult && !hasCloseReviewMatch(factCheckResult) && !hasDebunkStatement) {
+  if (judge && factCheckResult) {
     const verdict = await judge(normalizedText, factCheckResult.sources);
     // The LLM is only trusted to flag false claims: it is too cautious with legitimate news
     // (it marks official announcements as "dudoso"), so otherwise the rules + sources verdict stays.

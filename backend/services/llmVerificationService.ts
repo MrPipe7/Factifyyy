@@ -1,4 +1,4 @@
-﻿import type { VerifiedSource } from "../../shared/analyzer.js";
+import type { VerifiedSource } from "../../shared/analyzer.js";
 
 export type LlmClassification = "confiable" | "dudoso" | "falso";
 
@@ -10,11 +10,11 @@ export interface LlmVerdict {
 export type LlmJudge = (claim: string, sources: VerifiedSource[]) => Promise<LlmVerdict | null>;
 
 /** Bump when the prompt changes so cached verdicts from an older prompt are not reused. */
-export const PROMPT_VERSION = "v2";
+export const PROMPT_VERSION = "v3";
 
 /** Per-request timeout and total budget for one verdict (all models and retries together). */
-const TIMEOUT_MS = 6000;
-const TOTAL_BUDGET_MS = 12000;
+const TIMEOUT_MS = 8000;
+const TOTAL_BUDGET_MS = 18000;
 
 const INSTRUCTIONS = `Eres un verificador de noticias riguroso. Recibes una afirmación y fuentes encontradas en internet.
 Clasifícala en una de tres categorías:
@@ -34,6 +34,8 @@ Ejemplos (no relacionados con lo que vas a analizar):
 - "Un presunto documento filtrado indicaría que subirán los impuestos" -> dudoso
 - "Un estudio todavía no publicado afirma que el chocolate mejora la memoria" -> dudoso
 
+Tu conocimiento puede estar desactualizado: cargos políticos, resultados de elecciones y hechos recientes pueden haber cambiado. Nunca marques "falso" una afirmación solo porque contradice lo que recuerdas sobre quién ocupa un cargo o sobre acontecimientos recientes. Si las fuentes recientes la respaldan, es "confiable"; si no hay fuentes que la confirmen ni desmientan, es "dudoso".
+
 Las fuentes pueden ser irrelevantes o ruidosas: ignóralas si no tratan el tema. Un artículo que desmiente la afirmación NO la respalda.
 Responde SOLO con JSON: {"classification":"falso|confiable|dudoso","reason":"explicación breve en español (máx. 2 frases)"}`;
 
@@ -42,7 +44,8 @@ function buildPrompt(claim: string, sources: VerifiedSource[]): string {
     .slice(0, 6)
     .map((s, i) => `${i + 1}. [${s.publisher ?? "fuente"}] ${s.title ?? ""} — ${(s.snippet ?? "").slice(0, 280)}`)
     .join("\n");
-  return `${INSTRUCTIONS}\n\nAFIRMACIÓN:\n${claim}\n\nFUENTES:\n${evidence || "(sin fuentes)"}`;
+  const today = new Date().toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Santiago" });
+  return `${INSTRUCTIONS}\n\nFECHA DE HOY: ${today}. Las fuentes son más recientes que tu entrenamiento: si ellas contradicen lo que recuerdas, las fuentes tienen prioridad.\n\nAFIRMACIÓN:\n${claim}\n\nFUENTES:\n${evidence || "(sin fuentes)"}`;
 }
 
 function parseVerdict(text: string): LlmVerdict | null {
