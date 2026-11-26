@@ -35,6 +35,12 @@ export function HomePage({ onResult }: HomePageProps) {
       setError("Por favor, ingresa el texto de la noticia para analizar.");
       return;
     }
+    if (/^https?:\/\/\S+$/i.test(trimmed)) {
+      setInputUrl(trimmed);
+      setIngestMode("url");
+      void handleAnalyzeUrl(trimmed);
+      return;
+    }
     if (trimmed.length < 20) {
       setError("El texto debe contener al menos 20 caracteres.");
       return;
@@ -58,8 +64,8 @@ export function HomePage({ onResult }: HomePageProps) {
       });
   };
 
-  const handleAnalyzeUrl = async () => {
-    const trimmedUrl = inputUrl.trim();
+  const handleAnalyzeUrl = async (urlOverride?: string) => {
+    const trimmedUrl = (urlOverride ?? inputUrl).trim();
     if (!trimmedUrl) {
       setError("Ingresa un enlace de noticia para analizar.");
       return;
@@ -229,7 +235,7 @@ export function HomePage({ onResult }: HomePageProps) {
                     ? "Revisamos señales del texto para darte una clasificación simple y fácil de entender."
                     : "Leemos el contenido del enlace. En videos de YouTube y Shorts usamos sus subtítulos, por lo que solo funciona si el video los tiene."}
                 </p>
-                <button onClick={ingestMode === "text" ? handleAnalyze : handleAnalyzeUrl} disabled={loading} className="btn-primary flex-shrink-0">
+                <button onClick={ingestMode === "text" ? handleAnalyze : () => void handleAnalyzeUrl()} disabled={loading} className="btn-primary flex-shrink-0">
                   {loading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
