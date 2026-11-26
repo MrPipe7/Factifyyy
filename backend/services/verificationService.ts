@@ -228,7 +228,6 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
   if (factCheckResult) {
     providers = factCheckResult.providers;
     const hasExternal = factCheckResult.sources.length > 0;
-    const contradictions = factCheckResult.claimReviewContradictions;
     const sourceSupport = factCheckResult.sources.filter((s) => s.stance === "support").length;
     const sourceContradict = factCheckResult.sources.filter((s) => s.stance === "contradict").length;
     const sourceNeutral = factCheckResult.sources.filter((s) => s.stance === "neutral" || !s.stance).length;
@@ -242,7 +241,6 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
     );
     const strongExternalContradiction =
       sourceContradict >= 2 && sourceContradict >= sourceSupport + 1;
-    const hasOfficialCoincidences = factCheckResult.claimReviewMatches >= 2;
 
     // A weakly similar review is often about a different claim on the same topic: require a close match.
     const reviewMatch = hasCloseReviewMatch(factCheckResult) ? factCheckResult.claimReviewMatch : undefined;
@@ -256,33 +254,6 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
         confidence: verdictClassification === "dudoso" ? 70 : 92,
         explanation: `${reviewMatch.publisher} (verificador) calificó como «${reviewMatch.rating}» una afirmación equivalente a la analizada. ${buildEvidenceMiniSummary(factCheckResult.sources, verdictClassification, normalizedText)}`.trim(),
         recommendation: buildSourceBasedRecommendation(verdictClassification),
-        engine: "factcheck",
-        analysisOrigin: "Verificación externa encontrada",
-        preliminaryLocal: false,
-        sources: factCheckResult.sources,
-        sourceStats: {
-          support: sourceSupport,
-          contradict: sourceContradict,
-          neutral: sourceNeutral,
-          irrelevant: 0,
-          total: factCheckResult.sources.length,
-        },
-      };
-    } else if (hasOfficialCoincidences) {
-      const baseExplanation =
-        "Se detectaron dos o más coincidencias en agencias de verificación (ClaimReview), lo que respalda la credibilidad del contenido.";
-      enrichedResult = {
-        ...localResult,
-        classification: "confiable",
-        confidence: confidenceByExternalSources(
-          factCheckResult.claimReviewMatches,
-          contradictions,
-          factCheckResult.sources.length,
-          localAlerts,
-        ),
-        explanation: `${baseExplanation} ${buildEvidenceMiniSummary(factCheckResult.sources, "confiable", normalizedText)}`.trim(),
-        recommendation:
-          "La afirmación analizada presenta respaldo en verificadores externos confiables. Revisa igualmente las fuentes originales para mayor contexto.",
         engine: "factcheck",
         analysisOrigin: "Verificación externa encontrada",
         preliminaryLocal: false,
@@ -399,7 +370,9 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
   const judge = options.llm === undefined ? judgeWithGemini : options.llm;
   if (judge && factCheckResult) {
     const verdict = await judge(normalizedText, factCheckResult.sources);
-    if (verdict) {
+    const closeReview = hasCloseReviewMatch(factCheckResult) ? factCheckResult.claimReviewMatch : undefined;
+    const judgeContradictsDebunk = closeReview?.verdict === "falso" && verdict?.classification === "confiable";
+    if (verdict && !judgeContradictsDebunk) {
       enrichedResult = {
         ...enrichedResult,
         classification: verdict.classification,
