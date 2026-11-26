@@ -244,6 +244,9 @@ async function queryGoogleFactCheck(
   };
 }
 
+const RECENT_NEWS_CUES =
+  /\b(president[ea]|ministr[oa]|gobierno|congreso|senado|elecci(?:ón|ones)|candidat[oa]|anunci(?:a|ó|an)|viaj(?:a|ó)|visita|crisis|hoy|ayer|esta semana|2025|2026)\b/i;
+
 async function queryTavily(text: string, apiKey: string): Promise<VerifiedSource[]> {
   const response = await fetch("https://api.tavily.com/search", {
     method: "POST",
@@ -253,6 +256,7 @@ async function queryTavily(text: string, apiKey: string): Promise<VerifiedSource
       query: text,
       search_depth: "basic",
       max_results: 5,
+      ...(RECENT_NEWS_CUES.test(text) ? { topic: "news", days: 365 } : {}),
     }),
   });
   if (!response.ok) throw new Error(`tavily_${response.status}`);
