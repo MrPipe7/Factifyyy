@@ -399,9 +399,7 @@ export async function verifyText(normalizedText: string, options: VerifyOptions 
   const judge = options.llm === undefined ? judgeWithGemini : options.llm;
   if (judge && factCheckResult) {
     const verdict = await judge(normalizedText, factCheckResult.sources);
-    // The LLM is only trusted to flag false claims: it is too cautious with legitimate news
-    // (it marks official announcements as "dudoso"), so otherwise the rules + sources verdict stays.
-    if (verdict && verdict.classification !== "dudoso") {
+    if (verdict) {
       enrichedResult = {
         ...enrichedResult,
         classification: verdict.classification,
