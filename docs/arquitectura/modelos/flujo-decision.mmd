@@ -1,0 +1,14 @@
+flowchart TD
+  A[Texto validado] --> B{Verificación previa<br/>similitud ≥ 0,75}
+  B -->|Sí| C[Veredicto del verificador]
+  B -->|No| D{≥ 2 fuentes y diff ≥ 2}
+  D -->|Sí| E[Balance de fuentes]
+  D -->|No| F[Reglas locales]
+  C --> G[Gemini si Fact Check devolvió resultado]
+  G --> H{Gemini responde}
+  H -->|Sí| I[Aplicar veredicto Gemini]
+  H -->|No| J[Mantener fuentes y reglas]
+  E --> K[Confiable / Dudosa / Falsa]
+  F --> K
+  I --> K
+  J --> K
