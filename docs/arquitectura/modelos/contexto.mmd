@@ -1,0 +1,13 @@
+flowchart LR
+  U([Usuario])
+  F[Factify Web + API]
+  FC[Google Fact Check]
+  TV[Tavily]
+  GM[Gemini API]
+  DB[(Supabase)]
+  U -->|texto / URL / video| F
+  F -->|clasificación y explicación| U
+  F --> FC
+  F --> TV
+  F --> GM
+  F --> DB

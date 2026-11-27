@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor U as Usuario
+    participant FE as Frontend
+    participant API as API verify
+    participant VS as verificationService
+    participant FC as Fact Check y Tavily
+    participant G as Gemini
+    participant SB as Supabase
+
+    U->>FE: Ingresa texto
+    FE->>API: POST /api/verify
+    API->>API: Valida longitud
+    API->>VS: verifyText
+    VS->>FC: Busca verificaciones y fuentes
+    VS->>VS: Filtra fuentes y aplica reglas locales
+    VS->>G: Consulta (si hay resultado de Fact Check)
+    G-->>VS: Veredicto y motivo
+    VS->>SB: Registra verificación
+    VS-->>API: Clasificación, explicación y fuentes
+    API-->>FE: Respuesta JSON
+    FE-->>U: Resultado y alerta si es dudoso o falso

@@ -1,0 +1,7 @@
+GET https://factifyyy.vercel.app/api/health
+Fecha: 2026-11-27
+Muestras: 10
+Min: 86 ms
+Max: 960 ms
+Promedio: 180 ms
+Nota: muestreo manual desde entorno de desarrollo; no sustituye prueba de carga k6.
