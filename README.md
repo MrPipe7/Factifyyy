@@ -1,215 +1,206 @@
-# Factify — Plataforma de verificación de noticias mediante IA y contraste de fuentes
+# Factify — Plataforma de verificación de noticias mediante inteligencia artificial y contraste de fuentes
 
-[![Producción](https://img.shields.io/badge/demo-factifyyy.vercel.app-646CFF?style=flat-square)](https://factifyyy.vercel.app)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)
+---
 
-**Factify** ayuda a contrastar afirmaciones noticiosas **antes de compartirlas**. El usuario ingresa texto, un enlace a un artículo o un video de YouTube; el sistema devuelve una clasificación (**confiable**, **dudoso** o **falso**), una explicación en lenguaje claro, las fuentes consultadas y, si corresponde, una alerta preventiva.
+## Identificación del proyecto
 
-No sustituye el criterio humano ni el trabajo de un periodista: **acorta el camino** entre una afirmación dudosa y evidencia externa verificable.
-
-| | |
-|---|---|
-| **Demostración** | [https://factifyyy.vercel.app](https://factifyyy.vercel.app) |
-| **Contexto** | Proyecto de título — U. Andrés Bello, Escuela de Ingeniería en Computación e Informática, 2026 |
+| Campo | Detalle |
+|-------|---------|
+| **Nombre** | Factify |
+| **Tipo** | Producto mínimo viable (MPV), desplegado en entorno de producción |
+| **Institución** | Universidad Andrés Bello — Facultad de Ingeniería — Escuela de Ingeniería en Computación e Informática |
+| **Instancia académica** | Proyecto de título (asignatura INSW422) |
 | **Autor** | Felipe Figueroa |
-| **Evidencia académica (Hito 3)** | Carpeta [`docs/`](docs/README.md) · tag [`hito3`](https://github.com/MrPipe7/Factifyyy/releases/tag/hito3) · [CHANGELOG](CHANGELOG.md) |
+| **Año** | 2026 |
+| **Demostración en línea** | [https://factifyyy.vercel.app](https://factifyyy.vercel.app) |
+| **Repositorio** | [github.com/MrPipe7/Factifyyy](https://github.com/MrPipe7/Factifyyy) |
+| **Evidencia de cierre (Hito 3)** | Documentación en [`docs/`](docs/README.md) · etiqueta Git [`hito3`](https://github.com/MrPipe7/Factifyyy/releases/tag/hito3) · [`CHANGELOG.md`](CHANGELOG.md) |
 
 ---
 
-## Problema y propuesta
+## Resumen
 
-La desinformación se difunde más rápido que la verificación. Muchas personas comparten sin contrastar. Factify aborda un caso concreto: **evaluar una afirmación puntual** con reglas transparentes, verificadores publicados (ClaimReview), búsqueda web y, cuando hay contexto de Fact Check, un **juez por API (Gemini)** que lee la afirmación junto a extractos de fuentes.
+**Factify** es una aplicación web que apoya la verificación de afirmaciones de carácter noticioso antes de su difusión. El usuario puede ingresar **texto**, la **URL** de un artículo o un **enlace a video** (YouTube o Shorts, cuando existen subtítulos). El sistema entrega una **clasificación discretizada** en tres categorías — *confiable*, *dudoso* y *falso* —, junto con una **explicación**, las **fuentes consultadas** y una **advertencia preventiva** cuando el resultado no es confiable.
 
-El producto evolucionó desde un prototipo **solo local** (Sprint 1) hacia un **MPV en la nube** (Sprints 2–3): Vercel, Supabase, APIs externas y conjuntos de evaluación con ~**90 %** de exactitud en splits controlados (*holdout* / *final*).
+La solución combina **heurísticas lingüísticas locales**, consulta a **Google Fact Check Tools** y **Tavily Search**, reglas de balance de evidencia y, condicionado a que exista respuesta de verificación externa, un **modelo de lenguaje de terceros (Google Gemini)** utilizado como juez sobre la afirmación y extractos de fuentes. No se emplea un modelo de aprendizaje automático entrenado por el proyecto; el motor evolucionó desde un prototipo local (Iteración 1) hasta un **MPV distribuido** en Vercel y Supabase (Iteraciones 2 y 3).
 
----
-
-## Funcionalidades principales
-
-| Área | Qué ofrece |
-|------|------------|
-| **Verificación por texto** | Análisis de 20 a 10.000 caracteres con validación y mensajes de error claros (400/413). |
-| **Verificación por URL** | Extracción de contenido de artículos; ingreso manual si el sitio bloquea el scraping. |
-| **Video (YouTube / Shorts)** | Análisis a partir de **subtítulos** cuando existen; aviso si no hay texto utilizable (limitaciones en producción documentadas en `docs/riesgos.md`). |
-| **Tres niveles** | Confiable, dudoso, falso — **sin porcentaje de confianza** (decisión basada en evidencia y reglas, no en un número opaco). |
-| **Transparencia** | Fuentes con enlace, señales lingüísticas detectadas y **origen del análisis** (local, verificador, balance de fuentes, etc.). |
-| **Alerta preventiva** | Modal antes de tratar como seguro un contenido dudoso o falso. |
-| **Feedback** | Voto útil / poco útil ligado al registro de verificación en Supabase. |
-| **Historial** | Verificaciones recientes en el navegador (sin cuenta de usuario). |
-| **Tips** | Consejos de alfabetización mediática (sesgos, clickbait, fuentes). |
-| **Evaluación interna** | Scripts y datasets en `data/` para medir exactitud y matriz de confusión. |
+Este documento constituye la **carta de presentación del repositorio**: orienta a revisores, docentes y evaluadores sobre el propósito del sistema, su alcance, arquitectura, forma de despliegue y ubicación de la evidencia académica.
 
 ---
 
-## Cómo decide el sistema (resumen)
+## Problemática abordada y alcance
 
-Pipeline en `backend/services/verificationService.ts` (detalle en [`docs/arquitectura/`](docs/arquitectura/README.md)):
+El incremento de la desinformación y la velocidad de circulación de contenidos en redes dificultan el contraste previo a la difusión. El alcance de Factify **no** comprende la erradicación del fenómeno social de la desinformación, sino la **verificación asistida de una afirmación concreta**, con transparencia respecto del origen del veredicto.
 
-1. **Reglas locales** — señales de lenguaje (alarmismo, clickbait, falta de fuentes, etc.) en `shared/analyzer.ts`.
-2. **Google Fact Check Tools** — coincidencia con afirmaciones ya verificadas (umbral de similitud ~0,75).
-3. **Tavily** — fuentes de contexto; filtradas por relevancia respecto al texto.
-4. **Balance de fuentes** — si hay evidencia suficiente y coherente, sin depender solo del LLM.
-5. **Gemini** — solo si hubo **respuesta de Fact Check** (`factCheckResult`); veredicto con caché en tabla `llm_cache`.
-6. **Persistencia** — registro en `verifications_log` (Supabase, con RLS).
+**Incluido en el MPV:** verificación por texto y URL; análisis por subtítulos de video (con limitaciones documentadas en producción); registro de verificaciones y retroalimentación; historial local; material de alfabetización mediática; evaluación técnica con conjuntos etiquetados.
 
-Diagramas Mermaid: [`docs/arquitectura/modelos/`](docs/arquitectura/modelos/).
+**Excluido o parcial:** transcripción automática de audio; modelo de clasificación propio (HU19); métrica de “porcentaje de confianza” (retirada por baja interpretabilidad); cobertura completa de video en el entorno serverless de producción.
+
+Detalle de requerimientos y exclusiones: [`docs/requerimientos.md`](docs/requerimientos.md).
 
 ---
 
-## Stack tecnológico
+## Descripción funcional
 
-| Capa | Tecnología | Rol |
-|------|------------|-----|
-| Interfaz | React 18, Vite 6, TypeScript, CSS propio | SPA responsive, modo claro/oscuro |
-| API | Vercel Serverless (`api/*.ts`) | Endpoints HTTP, validación, orquestación |
-| Dominio | `backend/services/`, `shared/` | Fact check, URL, YouTube, LLM, evaluación |
-| Datos | Supabase (PostgreSQL) | Logs, feedback, caché LLM |
-| Externos | Google Fact Check, Tavily, Gemini | Verificación y contexto |
-| CI/CD | GitHub + Vercel | Push a `main` → despliegue automático |
+| Módulo | Descripción |
+|--------|-------------|
+| Verificación de texto | Entrada validada entre 20 y 10.000 caracteres; respuestas HTTP 400/413 ante entradas inválidas. |
+| Ingreso por URL | Extracción de contenido editorial; alternativa de pegado manual ante bloqueos del sitio origen. |
+| Ingreso por video | Obtención de subtítulos o metadatos de título; mensajes explícitos ante ausencia de texto analizable. |
+| Presentación de resultados | Clasificación, explicación, señales detectadas, estadísticas de fuentes y procedencia del análisis. |
+| Alerta preventiva | Intervención en interfaz ante clasificación *dudosa* o *falsa*. |
+| Retroalimentación | Registro opcional de utilidad de la explicación asociado al identificador de verificación. |
+| Historial | Persistencia local de consultas recientes sin cuenta de usuario. |
+| Consejos educativos | Contenidos curados sobre sesgos cognitivos, clickbait y verificación de fuentes. |
+| Evaluación técnica | Ejecución reproducible sobre conjuntos en `data/` con reporte de exactitud y matriz de confusión. |
 
-Decisiones de arquitectura documentadas: [`docs/arquitectura/adr/`](docs/arquitectura/adr/).
-
----
-
-## API (endpoints)
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/api/health` | Estado del servicio |
-| `POST` | `/api/verify` | Clasificar texto (`{ text, kind? }`) |
-| `POST` | `/api/analyze-url` | Extraer texto desde URL o video |
-| `POST` | `/api/feedback` | Retroalimentación (`verificationId`, `vote`) |
-| `POST` | `/api/fact-check` | Consulta fact-check (uso interno / pruebas) |
-| `GET` | `/api/evaluation` | Métricas por conjunto (requiere `FACTIFY_ADMIN_KEY` en producción) |
-
-Contratos y códigos HTTP: [`docs/requerimientos.md`](docs/requerimientos.md).
+Historias de usuario, sprints y trazabilidad: [`docs/trazabilidad.md`](docs/trazabilidad.md).
 
 ---
 
-## Estructura del repositorio
+## Motor de decisión (síntesis)
+
+La lógica central reside en `backend/services/verificationService.ts`. El orden de precedencia, documentado en [`docs/arquitectura/`](docs/arquitectura/README.md) y en los diagramas de [`docs/arquitectura/modelos/`](docs/arquitectura/modelos/), es el siguiente:
+
+1. Análisis de señales lingüísticas (`shared/analyzer.ts`).
+2. Consulta paralela a Google Fact Check y Tavily; filtrado de fuentes por relevancia lexical.
+3. Aplicación del veredicto de un verificador cuando la similitud con la afirmación analizada alcanza el umbral definido (0,75).
+4. Balance de fuentes a favor, en contra o neutrales cuando no existe coincidencia cercana con ClaimReview.
+5. Consulta a Gemini **únicamente** si la etapa de Fact Check devolvió resultado (`factCheckResult`); respuestas almacenadas en `llm_cache` (Supabase).
+6. Registro de la verificación en `verifications_log` con políticas RLS.
+
+---
+
+## Arquitectura de software
+
+| Capa | Implementación | Responsabilidad |
+|------|----------------|-----------------|
+| Presentación | React 18, Vite 6, TypeScript | Interfaz de usuario y consumo de la API |
+| Servicio HTTP | Funciones serverless Node.js (`api/`) | Validación de entrada, orquestación, códigos de estado |
+| Dominio | `backend/services/`, `shared/` | Integración con APIs externas, reglas, evaluación |
+| Persistencia | Supabase (PostgreSQL) | Logs, feedback, caché de veredictos LLM |
+| Integración | Google Fact Check, Tavily, Gemini | Evidencia externa y juicio asistido |
+| Despliegue | Vercel, GitHub | Entrega continua desde rama `main` |
+
+Registro de decisiones arquitectónicas (ADR): [`docs/arquitectura/adr/`](docs/arquitectura/adr/). Esquema de base de datos: [`supabase/schema.sql`](supabase/schema.sql).
+
+---
+
+## Contratos de servicio (API)
+
+| Método | Ruta | Función |
+|--------|------|---------|
+| `GET` | `/api/health` | Comprobación de disponibilidad |
+| `POST` | `/api/verify` | Clasificación de texto |
+| `POST` | `/api/analyze-url` | Extracción y clasificación desde URL o video |
+| `POST` | `/api/feedback` | Registro de retroalimentación del usuario |
+| `POST` | `/api/fact-check` | Consulta de verificación (uso técnico) |
+| `GET` | `/api/evaluation` | Métricas de evaluación (protegido en producción) |
+
+Especificación ampliada: [`docs/requerimientos.md`](docs/requerimientos.md).
+
+---
+
+## Organización del repositorio
 
 ```text
 Factifyyy/
-├── frontend/              # Aplicación React (páginas, componentes, estilos)
-├── api/                   # Funciones serverless Vercel
-├── backend/services/      # Lógica de verificación y evaluación
-├── shared/                # Analizador local y validación de entrada
-├── data/                  # Datasets etiquetados (dev, test, holdout, final, real)
-├── scripts/               # Evaluación y construcción de datasets
-├── supabase/schema.sql    # PostgreSQL: verifications_log, user_feedback, llm_cache + RLS
-├── docs/                  # Artefactos Hito 3 (objetivos, trazabilidad, pruebas, calidad…)
-├── CHANGELOG.md           # Historial por versión e hito3
-├── vercel.json
-└── package.json
+├── frontend/                 # Capa de presentación
+├── api/                      # Endpoints serverless
+├── backend/services/         # Servicios de dominio
+├── shared/                   # Reglas y validación compartida
+├── data/                     # Conjuntos de evaluación etiquetados
+├── scripts/                    # Automatización de evaluación
+├── supabase/schema.sql       # Definición DDL y RLS
+├── docs/                     # Artefactos de objetivos, trazabilidad y calidad
+├── CHANGELOG.md              # Registro de versiones
+└── vercel.json               # Configuración de despliegue
 ```
-
-Trazabilidad **requerimiento → HU → PR**: [`docs/trazabilidad.md`](docs/trazabilidad.md). Backlog en Jira (proyecto **FTY**).
 
 ---
 
-## Instalación y ejecución local
+## Instalación, configuración y despliegue
 
-**Requisitos:** Node.js 18+, npm 9+, cuenta Vercel/Supabase y claves de APIs (para flujo completo).
+### Requisitos
+
+Node.js 18 o superior, npm 9 o superior, cuentas en Vercel y Supabase, y claves de las APIs indicadas para operación integral.
+
+### Ejecución en entorno de desarrollo
 
 ```bash
 git clone https://github.com/MrPipe7/Factifyyy.git
 cd Factifyyy
 npm install
 npm run install:frontend
-
-# Copiar plantilla y completar claves
-cp .env.example .env.local
+cp .env.example .env.local   # completar variables (ver tabla inferior)
+npm run dev:vercel           # interfaz y funciones serverless locales
 ```
 
-**Frontend + API en local** (recomendado):
-
-```bash
-npm run dev:vercel
-```
-
-Solo interfaz (Vite, sin serverless):
-
-```bash
-npm run dev
-# http://localhost:5173 — verificación limitada si la API no está activa
-```
+La ejecución `npm run dev` levanta únicamente el frontend (Vite); la verificación completa requiere el entorno con API.
 
 ### Variables de entorno
 
-| Variable | Obligatoria | Descripción |
-|----------|-------------|-------------|
-| `SUPABASE_URL` | Sí (prod.) | URL del proyecto Supabase |
-| `SUPABASE_ANON_KEY` | Sí (prod.) | Clave anon (API server-side; no exponer secretos al cliente) |
-| `GOOGLE_FACT_CHECK_API_KEY` | Para fuentes FC | Google Fact Check Tools |
-| `TAVILY_API_KEY` | Para búsqueda | Tavily Search |
-| `GEMINI_API_KEY` | Para juez LLM | Google Gemini API |
-| `GEMINI_MODELS` | No | Lista de modelos de respaldo (opcional) |
-| `FACTIFY_ADMIN_KEY` | No | Protege `/api/evaluation` |
+| Variable | Relevancia |
+|----------|------------|
+| `SUPABASE_URL` | Conexión al proyecto Supabase |
+| `SUPABASE_ANON_KEY` | Cliente desde funciones serverless (no publicar secretos en el cliente web) |
+| `GOOGLE_FACT_CHECK_API_KEY` | Google Fact Check Tools |
+| `TAVILY_API_KEY` | Tavily Search |
+| `GEMINI_API_KEY` | API de Gemini |
+| `GEMINI_MODELS` | Opcional; cadena de modelos de respaldo |
+| `FACTIFY_ADMIN_KEY` | Opcional; protege el endpoint de evaluación |
 
-En **Vercel**: Project Settings → Environment Variables → redeploy. El archivo `.env.local` no se sube a git.
+En producción, las variables se configuran en Vercel; cualquier modificación exige un nuevo despliegue. El archivo `.env.local` permanece fuera del control de versiones.
 
----
+### Puesta en marcha en producción
 
-## Despliegue en producción
-
-1. Ejecutar [`supabase/schema.sql`](supabase/schema.sql) en el SQL Editor de Supabase (tablas + políticas RLS).
-2. Importar el repositorio en Vercel y configurar las variables.
-3. Comprobar `GET https://<tu-dominio>/api/health` y una verificación de prueba en la UI.
-
-Guía detallada de datos: `supabase/schema.sql` comentado al inicio.
+1. Ejecutar el script [`supabase/schema.sql`](supabase/schema.sql) en el editor SQL de Supabase.
+2. Vincular el repositorio en Vercel y cargar las variables de entorno.
+3. Validar `GET /api/health` y un caso representativo de `POST /api/verify`.
 
 ---
 
-## Calidad y métricas (referencia)
+## Verificación de calidad (referencia)
 
-| Medición | Resultado documentado |
-|----------|------------------------|
-| Exactitud (*holdout*, modo LLM) | 90 % (36/40) — ver `docs/pruebas/evidencia/` |
-| Exactitud (*final*, modo LLM) | 90 % (27/30) |
-| Falsas clasificadas como confiables | 0 en reportes finales de evaluación |
-| Prueba con usuarios (HU17) | Mejora de acierto 63,6 % → 90,9 % (n=11; ver `docs/objetivos.md`) |
+| Indicador | Resultado documentado |
+|-----------|------------------------|
+| Exactitud en conjunto *holdout* (modo con LLM) | 90 % (36/40) |
+| Exactitud en conjunto *final* (modo con LLM) | 90 % (27/30) |
+| Falsos positivos graves (falsa → confiable) | 0 en reportes finales de evaluación |
+| Prueba con usuarios (HU17) | Mejora de exactitud del participante: 63,6 % a 90,9 % (n = 11) |
 
-Reproducir evaluación:
+Reproducción:
 
 ```bash
 npm run test:evaluation -- --split holdout --mode llm
 npm run test:evaluation -- --split final --mode llm
 ```
 
-Modos `local` / `full`, splits `dev` | `test` | `real` | etc.: ver comentarios en `scripts/run-evaluation.mjs`. Caché en `.cache/evaluation/`.
+Evidencia archivada: [`docs/pruebas/evidencia/`](docs/pruebas/evidencia/). Objetivos medibles: [`docs/objetivos.md`](docs/objetivos.md).
 
 ---
 
-## Privacidad y limitaciones
+## Privacidad, riesgos y limitaciones
 
-- **No se pide registro** de usuario; el historial es local en el navegador.
-- El **texto verificado** se envía a proveedores externos (Google, Tavily, Gemini) según el flujo — documentado en requerimientos no funcionales: [`docs/requerimientos.md`](docs/requerimientos.md).
-- **Video en producción:** extracción de subtítulos puede fallar por restricciones de YouTube (HU18 parcial).
-- **No hay modelo ML propio** entrenado en el proyecto; HU19 queda como trabajo futuro.
-- **Sin garantía** de verdad absoluta: priorizar **dudoso** cuando la evidencia es insuficiente.
-
-Riesgos y deuda técnica: [`docs/riesgos.md`](docs/riesgos.md).
+- No se exige registro de identidad; el historial de consultas permanece en el navegador del usuario.
+- El contenido sometido a verificación se transmite a proveedores externos (Google, Tavily, Gemini) conforme al diseño del MPV.
+- La extracción de subtítulos de YouTube presenta **restricciones en producción** (riesgo materializado; ver [`docs/riesgos.md`](docs/riesgos.md)).
+- Los veredictos constituyen **apoyo a la decisión**, no certificación absoluta de veracidad.
 
 ---
 
-## Documentación del proyecto (Hito 3)
+## Documentación académica y control de cambios
 
-Índice de artefactos para revisión académica: **[`docs/README.md`](docs/README.md)**
+El conjunto de artefactos requeridos para el Hito 3 se indexa en **[`docs/README.md`](docs/README.md)** (objetivos, requerimientos, trazabilidad, plan y resultados de pruebas, atributos de calidad, arquitectura y riesgos).
 
-Incluye objetivos medibles, requerimientos y alcance del MPV, matriz de trazabilidad, plan y resultados de pruebas, seguridad/eficiencia, ADR y modelos UML.
+El historial de incrementos por versión e hito académico se registra en **[`CHANGELOG.md`](CHANGELOG.md)**.
 
----
-
-## Historial de cambios
-
-Ver **[CHANGELOG.md](CHANGELOG.md)** (versiones 0.1.0 → 0.3.0, sección **hito3**).
+La gestión de trabajo se realiza en Jira (proyecto **FTY**), con integración a ramas y pull requests de GitHub.
 
 ---
 
-## Licencia y uso
+## Autoría y uso
 
-Código y documentación del **proyecto de título** de Felipe Figueroa. Uso de APIs de terceros sujeto a sus términos. Para referencia académica y reproducción del MPV según instrucciones de este README y `docs/`.
+Obra de titulación de **Felipe Figueroa**. El código y la documentación se publican con fines de revisión académica y reproducción del MPV según las instrucciones de este archivo y de la carpeta `docs/`. El uso de servicios de terceros queda sujeto a los términos de cada proveedor.
 
-Si usas este repositorio en una evaluación, cita el **tag `hito3`** y los documentos en `docs/` como evidencia congelada del estado del MPV.
+Para citar el estado congelado del MPV en evaluaciones, utilícese la etiqueta **`hito3`** y la documentación asociada en `docs/`.
