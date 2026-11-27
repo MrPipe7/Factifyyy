@@ -3,7 +3,7 @@
 **Regla:** cada fila debe poder recorrerse en vivo en defensa. Los **Must** sin prueba ejecutada deben ser 0 antes del tag `hito3` (objetivo de cierre).
 
 **Leyenda Resultado:** Aprobado · Parcial · No hecho  
-**Commit referencia actual (main local):** `26dd1ff` (2026-11-27)
+**Commit referencia actual (main):** ver tag `hito3` en GitHub
 
 ---
 

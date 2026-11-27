@@ -15,7 +15,6 @@
 | A6 Seguridad | [calidad/rnf-seguridad.md](calidad/rnf-seguridad.md) |
 | A7 Arquitectura | [arquitectura/README.md](arquitectura/README.md) |
 | A9 Riesgos | [riesgos.md](riesgos.md) |
-| A8 Changelog | [../CHANGELOG.md](../CHANGELOG.md) |
 
 **A3 (HU en Jira):** criterios y aprobación stakeholder en tickets FTY.  
-**A8 (repo):** ramas `FTY-*`, PRs en GitHub; pendiente tag `hito3`.
+**A8 (repo):** ramas `FTY-*`, PRs en GitHub, tag [`hito3`](https://github.com/MrPipe7/Factifyyy/releases/tag/hito3). Historial en merges/releases de GitHub (sin `CHANGELOG.md` en repo).

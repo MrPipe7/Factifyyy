@@ -74,7 +74,6 @@ Factifyyy/
 ├── scripts/             # run-evaluation.mjs
 ├── supabase/schema.sql  # DDL + RLS
 ├── docs/                # Artefactos Hito 3 (objetivos, trazabilidad, pruebas…)
-├── CHANGELOG.md
 └── vercel.json
 ```
 

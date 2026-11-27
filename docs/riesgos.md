@@ -28,6 +28,6 @@
 ## Plan de mejoras (post-MPV)
 
 1. Completar k6 y publicar en `docs/calidad/reportes/`.
-2. Tag `hito3` + CHANGELOG.
+2. Tag `hito3` (evidencia congelada en GitHub).
 3. HU19 o mejoras Dudosa→Falsa solo con evidencia en holdout.
 4. HU18: proxy o ingestión manual de subtítulos en prod.
