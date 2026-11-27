@@ -1,0 +1,4 @@
+npm audit — Factifyyy (raíz del repositorio)
+Fecha: 2026-11-27
+Comando: npm audit
+Resultado: found 0 vulnerabilities

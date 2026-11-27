@@ -1,0 +1,35 @@
+// Ejemplo k6 para RNF-01 — ejecutar: k6 run k6-verify.js
+// Guardar salida en docs/calidad/reportes/k6-verify-YYYY-MM-DD.txt
+import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = {
+  vus: 10,
+  duration: '1m',
+  thresholds: {
+    http_req_duration: ['p(95)<25000'],
+    http_req_failed: ['rate<0.01'],
+  },
+};
+
+const PAYLOAD = JSON.stringify({
+  text:
+    'Según medios locales, las autoridades confirmaron hoy un comunicado oficial sobre medidas de seguridad en la región.',
+});
+
+export default function () {
+  const res = http.post('https://factifyyy.vercel.app/api/verify', PAYLOAD, {
+    headers: { 'Content-Type': 'application/json' },
+    timeout: '60s',
+  });
+  check(res, {
+    'status 200': (r) => r.status === 200,
+    'has classification': (r) => {
+      try {
+        return JSON.parse(r.body).classification !== undefined;
+      } catch {
+        return false;
+      }
+    },
+  });
+}
